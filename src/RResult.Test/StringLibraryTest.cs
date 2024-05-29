@@ -1,10 +1,7 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RResult;
-
 namespace RResult.Test;
 
 [TestClass]
-public class UnitTest1
+public class StringLibraryTest
 {
     [TestMethod]
     public void TestStartsWithUppder()
