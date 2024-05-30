@@ -14,8 +14,8 @@ class Program
             //string? input = Console.ReadLine();
 
             //if (string.IsNullOrEmpty(input)) break;
-            var resultOk = RResult<string, string>.Ok("hoge");
-            var resultErr = RResult<string, string>.Err("error!");
+            var resultOk = RResult<string>.Ok("hoge");
+            var resultErr = RResult<Exception>.Err(new Exception("error!"));
 
             Console.WriteLine($"value is: {resultOk.GetValue}");
             Console.WriteLine($"value is: {resultErr.GetError}");
