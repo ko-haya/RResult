@@ -3,44 +3,47 @@ namespace RResult.Test;
 [TestClass]
 public class RResultTest
 {
-    public static RResult<int, string> GetNum_Res(bool success) => success switch
-    {
-        true => 1,
-        _ => "fail",
-    };
+    public static RResult<int, string> GetNum_Res(bool success) =>
+         success switch
+         {
+             true => 1,
+             _ => "fail",
+         };
 
-    public static RResult<string, string> GetBothStr_Res(bool success) => success switch
-    {
-        true => RResult<string, string>.Ok("hoge"),
-        _ => RResult<string, string>.Err("fail"),
-        // Error
-        //true => "hoge",
-        //_ => "fail",
-    };
+    public static RResult<string, string> GetBothStr_Res(bool success) =>
+        success switch
+        {
+            true => RResult<string, string>.Ok("hoge"),
+            _ => RResult<string, string>.Err("fail"),
+            // Error
+            //true => "hoge",
+            //_ => "fail",
+        };
 
-    public static RResult<bool, string> GetVoid_Res(bool success) => success switch
-    {
-        true => true,
-        _ => "fail",
-    };
+    public static RResult<bool, string> GetVoid_Res(bool success) =>
+        success switch
+        {
+            true => true,
+            _ => "fail",
+        };
 
     [TestMethod]
     public void TestResult()
     {
-        var resultOk = RResult<string, string>.Ok("foo");
-        Assert.AreEqual("foo", resultOk.GetValue);
-
-        var resultErr = RResult<string, string>.Err("error!");
-        Assert.AreEqual("error!", resultErr.GetError);
+        var resultOk = RResult<string, string>.Ok("foo").GetValue;
+        Assert.AreEqual(resultOk, "foo");
+        var resultErr = RResult<string, string>.Err("error!").GetError;
+        Assert.AreEqual(resultErr, "error!");
     }
+
     [TestMethod]
     public void TestResultSameParams()
     {
         // Test (T, E) = (string, string)
-        var actual2 = GetBothStr_Res(true).GetValue;
-        Assert.AreEqual(actual2, "hoge");
-        var actual3 = GetBothStr_Res(false).GetError;
-        Assert.AreEqual(actual3, "fail");
+        var actual = GetBothStr_Res(true).GetValue;
+        Assert.AreEqual(actual, "hoge");
+        var actual2 = GetBothStr_Res(false).GetError;
+        Assert.AreEqual(actual2, "fail");
     }
 
     [TestMethod]
