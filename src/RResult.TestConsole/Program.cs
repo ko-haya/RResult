@@ -1,17 +1,9 @@
 ﻿using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using RResult;
 class Program
 {
-    static RResult<int, string> GetNum_Res(bool success)
-    {
-        if (!success)
-        {
-            return "fail";
-
-        }
-        return 1;
-    }
     static void Main(string[] args)
     {
         int row = 0;
@@ -26,10 +18,6 @@ class Program
             var resultOk = RResult<string, string>.Ok("hoge");
             var resultErr = RResult<string, Exception>.Err(new Exception("error!"));
 
-            int hoge = 1;
-            hoge = GetNum_Res(false).Match<int>(
-                     n => n + 10,
-                     err => 0);
             Console.WriteLine($"value is: {resultOk.GetValue}");
             Console.WriteLine($"value is: {resultErr.GetError}");
             //Console.WriteLine($"Input: {input}");
