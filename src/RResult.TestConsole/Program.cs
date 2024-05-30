@@ -1,4 +1,6 @@
-﻿using RResult;
+﻿using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
+using RResult;
 class Program
 {
     static void Main(string[] args)
@@ -9,16 +11,21 @@ class Program
         {
             if (row == 0 || row >= 25)
                 ResetConsole();
-            string? input = Console.ReadLine();
+            //string? input = Console.ReadLine();
 
-            if (string.IsNullOrEmpty(input)) break;
-            Console.WriteLine($"Input: {input}");
-            Console.WriteLine("Begins with uppercase? " +
-                 $"{(StringLibrary.StartsWithUpper(input) ? "Yes" : "No")}");
+            //if (string.IsNullOrEmpty(input)) break;
+            var resultOk = RResult<string, string>.Ok("hoge");
+            var resultErr = RResult<string, string>.Err("error!");
+
+            Console.WriteLine($"value is: {resultOk.GetValue}");
+            Console.WriteLine($"value is: {resultErr.GetError}");
+            //Console.WriteLine($"Input: {input}");
+            //Console.WriteLine("Begins with uppercase? " +
+            //     $"{(StringLibrary.StartsWithUpper(input) ? "Yes" : "No")}");
             Console.WriteLine();
             row += 4;
         } while (true);
-        return;
+        //return;
 
         // Declare a ResetConsole local method
         void ResetConsole()
