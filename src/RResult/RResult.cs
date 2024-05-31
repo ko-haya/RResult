@@ -2,7 +2,7 @@ using System.ComponentModel;
 
 namespace RResult;
 
-public record RResult<T, E> where T : notnull where E : notnull
+public record struct RResult<T, E> where T : notnull where E : notnull
 {
     private readonly T? value;
     private readonly E? error;
