@@ -25,8 +25,8 @@ class Program
             var resultOk = RResult<string, string>.Ok("hoge");
             var resultErr = RResult<string, Exception>.Err(new Exception("error!"));
 
-            Console.WriteLine($"value is: {resultOk.GetValue}");
-            Console.WriteLine($"value is: {resultErr.GetError?.Message}");
+            Console.WriteLine($"value is: {resultOk.Unwrap}");
+            Console.WriteLine($"value is: {resultErr.UnwrapErr?.Message}");
             //Console.WriteLine($"Input: {input}");
             //Console.WriteLine("Begins with uppercase? " +
             //     $"{(StringLibrary.StartsWithUpper(input) ? "Yes" : "No")}");

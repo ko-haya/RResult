@@ -37,37 +37,39 @@ public class RResultTest
     [TestMethod]
     public void TestResult()
     {
-        var resultOk = RResult<string, string>.Ok("foo").GetValue;
+        var resultOk = RResult<string, string>.Ok("foo").Unwrap;
         Assert.AreEqual(resultOk, "foo");
-        var resultErr = RResult<string, string>.Err("error!").GetError;
+        var resultErr = RResult<string, string>.Err("error!").UnwrapErr;
         Assert.AreEqual(resultErr, "error!");
     }
+
+    // TODO: Add test for Unwrap
 
     [TestMethod]
     public void TestResultSameParams()
     {
         // Test (T, E) = (string, string)
-        var actual = GetBothStr_Res(true).GetValue;
+        var actual = GetBothStr_Res(true).Unwrap;
         Assert.AreEqual(actual, "hoge");
-        var actual2 = GetBothStr_Res(false).GetError;
+        var actual2 = GetBothStr_Res(false).UnwrapErr;
         Assert.AreEqual(actual2, "fail");
     }
 
     [TestMethod]
     public void TestResultVoidParams()
     {
-        var actual = GetVoid_Res(true).GetValue;
+        var actual = GetVoid_Res(true).Unwrap;
         Assert.AreEqual(actual, true);
-        var actual3 = GetVoid_Res(false).GetError;
+        var actual3 = GetVoid_Res(false).UnwrapErr;
         Assert.AreEqual(actual3, "fail");
     }
 
     [TestMethod]
     public void TestResultException()
     {
-        var actual = GetEx_Res(true).GetValue;
+        var actual = GetEx_Res(true).Unwrap;
         Assert.AreEqual(actual, 1);
-        var actual2 = GetEx_Res(false).GetError;
+        var actual2 = GetEx_Res(false).UnwrapErr;
         Assert.AreEqual(actual2?.Message, "fail");
     }
 
@@ -77,7 +79,7 @@ public class RResultTest
         var actual = GetNum_Res(true) // 1
                         .AndThen(n => n + 10) // 11
                         .AndThen(s => s + 10) // 21
-                        .GetValue;
+                        .Unwrap;
         Assert.AreEqual(actual, 21);
     }
 
