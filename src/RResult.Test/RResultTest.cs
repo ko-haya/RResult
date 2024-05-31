@@ -72,17 +72,39 @@ public class RResultTest
     [TestMethod]
     public void TestRResultAndThen()
     {
-        // Can transform return type.
-        var actual = Ok(1) // Ok(1)
-                     .AndThen(n => Ok(n.ToString())) // Ok("1")
-                     .AndThen(a => Ok(int.Parse(a!))); //  Ok(1)
-        Assert.AreEqual(actual, 1);
+        var actual_ok = Ok(1)
+                        .AndThen(
+                            v => Ok(v + 10),
+                            e => RResult<int, string>.Err(e)
+                        )
+                        .AndThen(
+                            v => Ok($"{v}"),
+                            e => RResult<string, string>.Err(e)
+                        );
+        Assert.AreEqual(actual_ok, Ok("11"));
 
-        //var actual2 = Ok(1) // Ok(1)
-        //             .AndThen(n => Err("failed")) // Err(null)
-        //             .AndThen(Ok);
-        //.Or(Ok(0)); //  Ok(0)
-        //Assert.AreEqual(actual2, 0);
+        var actual_err = Err("failed at 1")
+                         .AndThen(
+                            v => Ok(v),
+                            e => RResult<int, string>.Err(e)
+                         )
+                         .AndThen(
+                            n => Ok(n),
+                            e => RResult<int, string>.Err(e)
+                         );
+        Assert.AreEqual(actual_err, "failed at 1");
+
+
+        var actual_err2 = Ok(1) // Ok(1)
+                         .AndThen(
+                            _v => Err("failed at 2"),
+                            e => RResult<int, string>.Err(e)
+                         )
+                         .AndThen(
+                            v => Ok(v),
+                            e => RResult<int, string>.Err(e)
+                         );
+        Assert.AreEqual(actual_err2, "failed at 2");
     }
 
     [TestMethod]

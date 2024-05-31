@@ -11,7 +11,7 @@ public record struct RResult<T, E> where T : notnull where E : notnull
 
     public static RResult<T, E> Ok(T v) => new(v, default);
 
-    public static RResult<T, E> Err(E e) => new(default, e);
+    public static RResult<T, E> Err(E? e) => new(default, e);
 
     public static implicit operator RResult<T, E>(T v) => new(v, default);
     public static implicit operator RResult<T, E>(E e) => new(default, e);
@@ -63,11 +63,25 @@ public record struct RResult<T, E> where T : notnull where E : notnull
 
     // Calls `fn` if the result is `Ok`
     // `fn` need not always be of the same type as the receiver
-    public readonly R AndThen<R>(Func<T?, R> fn) => this switch
+    //    public readonly R AndThen<R>(Func<T?, R> fn) => this switch
+    //    {
+    //        { IsOk: true } => fn(value),
+    //        // TODO: return self as Error
+    //        _ => throw new Exception("chain error"),
+    //    };
+    //
+    //public readonly R AndThenOrSelf<R>(Func<T?, R> fn) => this switch
+    //{
+    //    { IsOk: true } => fn(value),
+    //    // TODO: return self as Error
+    //    _ => this,
+    //};
+
+    public readonly R AndThen<R>(Func<T?, R> fn, Func<E?, R> onFailure) => this switch
     {
         { IsOk: true } => fn(value),
-        // TODO: return self as Error
-        _ => throw new Exception("chain error"),
+        _ => onFailure(error),
+        // _=> Err(error),
     };
 
 
