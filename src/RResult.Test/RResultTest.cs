@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+
 namespace RResult.Test;
 
 [TestClass]
@@ -75,6 +77,12 @@ public class RResultTest
                      .AndThen(n => Ok(n.ToString())) // Ok("1")
                      .AndThen(a => Ok(int.Parse(a!))); //  Ok(1)
         Assert.AreEqual(actual, 1);
+
+        //var actual2 = Ok(1) // Ok(1)
+        //             .AndThen(n => Err("failed")) // Err(null)
+        //             .AndThen(Ok);
+        //.Or(Ok(0)); //  Ok(0)
+        //Assert.AreEqual(actual2, 0);
     }
 
     [TestMethod]
@@ -85,6 +93,16 @@ public class RResultTest
                      .AndThenBy(n => n + 10)// Ok(310))
                      .AndThenBy(a => a + 1); // Ok(311))
         Assert.AreEqual(actual, 311);
+
+        var actual2 = Ok(300) // Ok(300)
+                     .AndThenBy(_ => Err("error")) // Err(error))
+                     .AndThenBy(n => n + 10); // pass
+        Assert.AreEqual(actual2, "error");
+
+        var actual3 = Ok(300) // Ok(300)
+                     .AndThenBy(_ => Err("error")) // Err(error))
+                     .Or(Ok(1)); // effective.
+        Assert.AreEqual(actual3, 1);
     }
 
     [TestMethod]

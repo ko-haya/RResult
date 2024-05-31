@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+
 namespace RResult;
 
 public record struct RResult<T, E> where T : notnull where E : notnull
@@ -26,7 +28,7 @@ public record struct RResult<T, E> where T : notnull where E : notnull
     public readonly T? Unwrap => this switch
     {
         { IsOk: true } => value,
-        _ => throw new Exception(),
+        _ => throw new Exception("unwrap failed"),
     };
 
     public readonly E? UnwrapErr => this switch
@@ -61,11 +63,17 @@ public record struct RResult<T, E> where T : notnull where E : notnull
 
     // Calls `fn` if the result is `Ok`
     // `fn` need not always be of the same type as the receiver
-    public readonly R? AndThen<R>(Func<T?, R> fn) => this switch
+    public readonly R AndThen<R>(Func<T?, R> fn) => this switch
     {
         { IsOk: true } => fn(value),
-        _ => default, // TODO: Check if this is correct?
+        // TODO: return self as Error
+        _ => throw new Exception("chain error"),
     };
+
+
+    //public inline fun<V, E, F> Result<V, E>.asErr(): Result<Nothing, F> {
+    //    return this as Result<Nothing, F>
+
 
     //public readonly R? Map<R>(Func<T?, R> fn) => this switch
     //{
