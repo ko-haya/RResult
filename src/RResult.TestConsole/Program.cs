@@ -4,6 +4,13 @@ using System.Security.Cryptography;
 using RResult;
 class Program
 {
+    public static RResult<int, Exception> GetEx_Res(bool success) =>
+         success switch
+         {
+             true => 1,
+             // _ => new Exception("panic!")
+             _ => new Exception("fail"),
+         };
     static void Main(string[] args)
     {
         int row = 0;
@@ -19,7 +26,7 @@ class Program
             var resultErr = RResult<string, Exception>.Err(new Exception("error!"));
 
             Console.WriteLine($"value is: {resultOk.GetValue}");
-            Console.WriteLine($"value is: {resultErr.GetError}");
+            Console.WriteLine($"value is: {resultErr.GetError?.Message}");
             //Console.WriteLine($"Input: {input}");
             //Console.WriteLine("Begins with uppercase? " +
             //     $"{(StringLibrary.StartsWithUpper(input) ? "Yes" : "No")}");

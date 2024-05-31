@@ -17,10 +17,10 @@ public record RResult<T, E> where T : notnull where E : notnull
     public static implicit operator RResult<T, E>(E e) => new(default, e);
 
     public bool IsOk => value is not null && error is null;
-
+    public bool IsError => !IsOk;
     public T? GetValue => IsOk ? value : default;
 
-    public E? GetError => !IsOk ? error : default;
+    public E? GetError => IsError ? error : default;
 
     public RResult<T, E> AndThen(Func<T?, RResult<T, E>> fn) =>
         this switch

@@ -20,6 +20,13 @@ public class RResultTest
             //_ => "fail",
         };
 
+    public static RResult<int, Exception> GetEx_Res(bool success) =>
+         success switch
+         {
+             true => 1,
+             _ => new Exception("fail"),
+         };
+
     public static RResult<bool, string> GetVoid_Res(bool success) =>
         success switch
         {
@@ -53,6 +60,15 @@ public class RResultTest
         Assert.AreEqual(actual, true);
         var actual3 = GetVoid_Res(false).GetError;
         Assert.AreEqual(actual3, "fail");
+    }
+
+    [TestMethod]
+    public void TestResultException()
+    {
+        var actual = GetEx_Res(true).GetValue;
+        Assert.AreEqual(actual, 1);
+        var actual2 = GetEx_Res(false).GetError;
+        Assert.AreEqual(actual2?.Message, "fail");
     }
 
     [TestMethod]
