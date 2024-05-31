@@ -46,29 +46,34 @@ public class RResultTest
         Assert.AreEqual(actual2?.Message, "fail");
     }
 
+    // Shorthands
+    public static RResult<int, string> Ok(int v) => RResult<int, string>.Ok(v);
+    public static RResult<string, string> Ok(string v) => RResult<string, string>.Ok(v);
+    public static RResult<int, string> Err(string e) => RResult<int, string>.Err(e);
+
     [TestMethod]
     public void TestRResultAnd()
     {
-        var actual = RResult<int, string>.Ok(1)
-                                         .And(RResult<int, string>.Ok(2));
+        var actual = Ok(1)
+                     .And(Ok(2));
         Assert.AreEqual(actual, 2);
 
-        var actual2 = RResult<int, string>.Ok(1)
-                                          .And(RResult<int, string>.Err("failed"));
+        var actual2 = Ok(1)
+                      .And(Err("failed"));
         Assert.AreEqual(actual2, "failed");
 
-        var actual3 = RResult<int, string>.Err("failed")
-                                          .And(RResult<int, string>.Ok(1));
-        Assert.AreEqual(actual2, "failed");
+        var actual3 = Err("failed")
+                      .And(Ok(1));
+        Assert.AreEqual(actual3, "failed");
     }
 
     [TestMethod]
     public void TestRResultAndThen()
     {
         // Can transform return type.
-        var actual = RResult<int, string>.Ok(1) // Ok(1)
-                                         .AndThen(n => RResult<string, string>.Ok(n.ToString())) // Ok("1")
-                                         .AndThen(a => RResult<int, string>.Ok(int.Parse(a!))); //  Ok(1)
+        var actual = Ok(1) // Ok(1)
+                     .AndThen(n => Ok(n.ToString())) // Ok("1")
+                     .AndThen(a => Ok(int.Parse(a!))); //  Ok(1)
         Assert.AreEqual(actual, 1);
     }
 
@@ -76,27 +81,27 @@ public class RResultTest
     public void TestRResultAndThenBy()
     {
         // Can only use return type at first one.
-        var actual = RResult<int, string>.Ok(300) // Ok(300)
-                                         .AndThenBy(n => n + 10)// Ok(310))
-                                         .AndThenBy(a => a + 1); // Ok(311))
+        var actual = Ok(300) // Ok(300)
+                     .AndThenBy(n => n + 10)// Ok(310))
+                     .AndThenBy(a => a + 1); // Ok(311))
         Assert.AreEqual(actual, 311);
     }
 
     [TestMethod]
     public void TestRResultOr()
     {
-        var actual = RResult<int, string>.Ok(1) // 1
-                                         .Or(RResult<int, string>.Ok(2)) // pass
-                                         .Or(RResult<int, string>.Err("failed"));  // pass
+        var actual = Ok(1) // 1
+                     .Or(Ok(2)) // pass
+                     .Or(Err("failed"));  // pass
         Assert.AreEqual(actual, 1);
 
-        var actual2 = RResult<int, string>.Err("failed")
-                                          .Or(RResult<int, string>.Ok(3))
-                                          .Or(RResult<int, string>.Ok(4));  // pass
+        var actual2 = Err("failed")
+                      .Or(Ok(3))
+                      .Or(Ok(4));  // pass
         Assert.AreEqual(actual2, 3);
 
-        var actual3 = RResult<int, string>.Err("failed")
-                                          .Or(RResult<int, string>.Err("failed2"));
+        var actual3 = Err("failed")
+                      .Or(Err("failed2"));
         Assert.AreEqual(actual3, "failed2");
     }
 }
