@@ -64,7 +64,7 @@ public record struct RResult<T, E> where T : notnull where E : notnull
     public readonly R? AndThen<R>(Func<T?, R> fn) => this switch
     {
         { IsOk: true } => fn(value),
-        _ => default,
+        _ => default, // TODO: Check if this is correct?
     };
 
     //public readonly R? Map<R>(Func<T?, R> fn) => this switch
