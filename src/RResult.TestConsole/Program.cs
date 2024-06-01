@@ -1,7 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using RResult;
+﻿using RResult;
 class Program
 {
     public static RResult<int, Exception> GetEx_Res(bool success) =>
