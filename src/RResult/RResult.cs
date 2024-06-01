@@ -2,7 +2,8 @@ using System.Security.Cryptography;
 
 namespace RResult;
 
-public record struct RResult<T, E> where T : notnull where E : notnull
+public readonly record struct RResult<T, E>
+// where T : notnull where E : notnull
 {
     private readonly T? value;
     private readonly E? error;
@@ -61,28 +62,24 @@ public record struct RResult<T, E> where T : notnull where E : notnull
         _ => this,
     };
 
-    // Calls `fn` if the result is `Ok`
-    // `fn` need not always be of the same type as the receiver
-    //    public readonly R AndThen<R>(Func<T?, R> fn) => this switch
-    //    {
-    //        { IsOk: true } => fn(value),
-    //        // TODO: return self as Error
-    //        _ => throw new Exception("chain error"),
-    //    };
-    //
-    //public readonly R AndThenOrSelf<R>(Func<T?, R> fn) => this switch
-    //{
-    //    { IsOk: true } => fn(value),
-    //    // TODO: return self as Error
-    //    _ => this,
-    //};
+    // Calls `onSuccess` if the result is `Ok`
+    // Calls `onFailure` if the result is `Ok`
+    // Each callback function needs must be same type as the receiver `R`
+    public readonly R Match<R>(Func<T?, R> onSuccess, Func<E?, R> onFailure) =>
+        this switch
+        {
+            { IsOk: true } => onSuccess(value),
+            _ => onFailure(error),
+        };
 
-    public readonly R AndThen<R>(Func<T?, R> fn, Func<E?, R> onFailure) => this switch
-    {
-        { IsOk: true } => fn(value),
-        _ => onFailure(error),
-        // _=> Err(error),
-    };
+    //public readonly RResult<T, E> AndThenBy(Func<T?, RResult<T, E>> fn) => this switch
+    //public RResult<T2, E2> AndThen2<T2, E2>(Func<T, RResult<T2, E>> fn) =>
+    public readonly RResult<T2, E> AndThen<T2>(Func<T, RResult<T2, E>> fn) =>
+        this switch
+        {
+            { IsOk: true } => fn(value!),
+            _ => RResult<T2, E>.Err(error),
+        };
 
 
     //public inline fun<V, E, F> Result<V, E>.asErr(): Result<Nothing, F> {

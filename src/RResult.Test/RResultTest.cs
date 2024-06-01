@@ -70,41 +70,74 @@ public class RResultTest
     }
 
     [TestMethod]
-    public void TestRResultAndThen()
+    public void TestRResultMatch()
     {
+        // Happy path
         var actual_ok = Ok(1)
-                        .AndThen(
-                            v => Ok(v + 10),
-                            e => RResult<int, string>.Err(e)
+                        .Match(
+                            v => Ok(v + 10), // 11
+                            RResult<int, string>.Err
                         )
-                        .AndThen(
-                            v => Ok($"{v}"),
-                            e => RResult<string, string>.Err(e)
+                        .Match(
+                            v => Ok($"{v}"), // "11"
+                            RResult<string, string>.Err
                         );
         Assert.AreEqual(actual_ok, Ok("11"));
 
+        // Can convert Err message
         var actual_err = Err("failed at 1")
-                         .AndThen(
-                            v => Ok(v),
-                            e => RResult<int, string>.Err(e)
+                         .Match(
+                            Ok,
+                            RResult<int, string>.Err
                          )
-                         .AndThen(
-                            n => Ok(n),
-                            e => RResult<int, string>.Err(e)
+                         .Match(
+                            Ok,
+                            _ => RResult<int, string>.Err("failed at 3")
                          );
-        Assert.AreEqual(actual_err, "failed at 1");
+        Assert.AreEqual(actual_err, "failed at 3");
 
 
         var actual_err2 = Ok(1) // Ok(1)
-                         .AndThen(
-                            _v => Err("failed at 2"),
-                            e => RResult<int, string>.Err(e)
+                         .Match(
+                            _ => Err("failed at 2"),
+                            RResult<int, string>.Err
                          )
-                         .AndThen(
-                            v => Ok(v),
-                            e => RResult<int, string>.Err(e)
+                         .Match(
+                            Ok,
+                            RResult<int, string>.Err
                          );
         Assert.AreEqual(actual_err2, "failed at 2");
+    }
+
+    public static void TestRResultAndThen()
+    {
+        // Happy path
+        var actual_ok = Ok(1) // 1
+                        .AndThen(v => Ok(v + 10)) // 11
+                        .AndThen(v => Ok($"{v}")); // "11"
+        Assert.AreEqual(actual_ok, Ok("11"));
+
+        // UnHappy path
+        //  - Use Exception type error
+        //  - Forces first error
+        var actual_err = RResult<int, Exception>.Err(new Exception("faild at 1"))
+                         .AndThen(RResult<int, Exception>.Ok) // pass!
+                         .AndThen(_ => RResult<int, Exception>.Err(new Exception("failed at 2"))); // pass!
+        Assert.AreEqual(actual_err.UnwrapErr!.Message, "failed at 1");
+
+        // UnHappy path
+        //  - Use string type error
+        var actual_err2 = Err("faild at 1")
+                         .AndThen(Ok) // pass!
+                         .AndThen(_ => RResult<string, string>.Err("failed at 2")); // pass!
+        Assert.AreEqual(actual_err.UnwrapErr!.Message, "failed at 1");
+
+        // UnHappy path
+        //  - Thru when error occured
+        var actual_err3 = Ok(1) // Ok(1)
+                         .AndThen(_ => Err("failed at 2"))
+                         .AndThen(Ok); // pass!
+        Assert.AreEqual(actual_err3, "failed at 2");
     }
 
     [TestMethod]
