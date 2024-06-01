@@ -96,7 +96,6 @@ public class RResultTest
                          );
         Assert.AreEqual(actual_err, "failed at 3");
 
-
         var actual_err2 = Ok(1) // Ok(1)
                          .Match(
                             _ => Err("failed at 2"),
@@ -109,7 +108,7 @@ public class RResultTest
         Assert.AreEqual(actual_err2, "failed at 2");
     }
 
-    public static void TestRResultAndThen()
+    public void TestRResultAndThen()
     {
         // Happy path
         var actual_ok = Ok(1) // 1
