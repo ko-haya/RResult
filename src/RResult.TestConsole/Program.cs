@@ -21,8 +21,8 @@ class Program
             //if (string.IsNullOrEmpty(input)) break;
             var resultOk = RResult<string, string>.Ok("hoge");
             var resultErr = RResult<string, Exception>.Err(new Exception("error!"));
-            RResult<Unit, string> resultUnit = default;
-
+            RResult<RUnit, string> resultUnit = default;
+            //var actual3 = RResult<int, int>.Ok(2); // Ok(2)
             Console.WriteLine($"value is: {resultUnit}");
             Console.WriteLine($"value is: {resultOk.Unwrap}");
             Console.WriteLine($"value is: {resultErr.UnwrapErr?.Message}");

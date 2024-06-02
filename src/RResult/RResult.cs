@@ -1,6 +1,7 @@
 namespace RResult;
 
-public readonly record struct RResult<T, E> where E : notnull
+public readonly record struct RResult<T, E>
+// where E : notnull
 {
     private readonly T? value;
     private readonly E? error;
@@ -14,7 +15,8 @@ public readonly record struct RResult<T, E> where E : notnull
     public static implicit operator RResult<T, E>(T v) => new(v, default);
     public static implicit operator RResult<T, E>(E e) => new(default, e);
 
-    public readonly bool IsOk => value is not null && error is null;
+    public readonly bool IsOk =>
+        value is not null && EqualityComparer<E>.Default.Equals(error, default);
     public readonly bool IsErr => !IsOk;
 
     public override string ToString() =>
@@ -64,13 +66,6 @@ public readonly record struct RResult<T, E> where E : notnull
             _ => onFailure(error),
         };
 
-    // Returns result if the result is Ok, otherwise returns the Err value of self
-    public readonly RResult<T, E> And(RResult<T, E> result) =>
-        this switch
-        {
-            { IsOk: true } => result,
-            _ => this,
-        };
 
     // Maps a `Result<T, E>` to `Result<U, E>` by applying a function to a
     // contained [`Ok`] value, leaving an [`Err`] value untouched.
@@ -79,6 +74,24 @@ public readonly record struct RResult<T, E> where E : notnull
         {
             { IsOk: true } => RResult<U, E>.Ok(transform(value)),
             _ => RResult<U, E>.Err(error),
+        };
+
+    // Maps a `Result<T, E>` to `Result<T, F>` by applying a function to a
+    // contained [`Err`] value, leaving an [`Ok`] value untouched.
+    // This function can be used to pass through a successful result while handling
+    public readonly RResult<T, F> MapErr<F>(Func<E?, F> transform) =>
+        this switch
+        {
+            { IsOk: true } => RResult<T, F>.Ok(value!),
+            _ => RResult<T, F>.Err(transform(error)),
+        };
+
+    // Returns result if the result is Ok, otherwise returns the Err value of self
+    public readonly RResult<T, E> And(RResult<T, E> result) =>
+        this switch
+        {
+            { IsOk: true } => result,
+            _ => this,
         };
 
     // Calls function if the result is `Ok`

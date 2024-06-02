@@ -13,12 +13,34 @@ public class RResultTest
     }
 
     [TestMethod]
+    public void TestErrDefaultAsOk()
+    {
+        // If nullable error type, default error can set 
+        var resultStr = RResult<string, string>.Err(default).ToString();
+        var resultStr2 = RResult<string, string>.Err("error").ToString();
+        Assert.AreEqual(resultStr, "Err()");
+        Assert.AreEqual(resultStr2, "Err(error)");
+
+        // If not nullable error type, so default value will OK
+        var resultInt = RResult<int, int>.Err(default).ToString();
+        var resultInt2 = RResult<int, int>.Err(1).ToString();
+        Assert.AreEqual(resultInt, "Ok(0)");
+        Assert.AreEqual(resultInt2, "Err(1)");
+
+        var resultBool = RResult<bool, bool>.Err(default).ToString();
+        var resultBool2 = RResult<bool, bool>.Err(true).ToString();
+        Assert.AreEqual(resultBool, "Ok(False)");
+        Assert.AreEqual(resultBool2, "Err(True)");
+    }
+
+    [TestMethod]
     public void TestRResultUnitType()
     {
         var resultOk = RResult<RUnit, string>.Ok(default).ToString();
         Assert.AreEqual(resultOk, "Ok(())");
-        var resultErr = RResult<RUnit, RUnit>.Err(default).ToString();
-        Assert.AreEqual(resultErr.ToString(), "Err(())");
+        // default treat as Ok
+        var resultErr = RResult<RUnit, int>.Err(1).ToString();
+        Assert.AreEqual(resultErr, "Err(1)");
     }
 
     [TestMethod]
@@ -29,6 +51,10 @@ public class RResultTest
         Assert.AreEqual(actual, "hoge");
         var actual2 = GetBothTypeStr(false).UnwrapErr;
         Assert.AreEqual(actual2, "fail");
+
+        var actual3 = RResult<int, int>.Ok(2); // Ok(3)
+                                               //.MapErr(Stringify);
+        Assert.AreEqual(actual3.Unwrap, 2);
     }
 
     // Can use implicit constructor when deffenet types.
