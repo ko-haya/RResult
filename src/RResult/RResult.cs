@@ -72,22 +72,22 @@ public readonly record struct RResult<T, E> where E : notnull
             _ => this,
         };
 
-    // Calls `onSuccess` function if the result is `Ok`
-    // `onSuccess` must always be of the same type as the receiver
-    public readonly RResult<T, E> AndThenBy(Func<T?, RResult<T, E>> onSuccess) =>
+    // Maps a `Result<T, E>` to `Result<U, E>` by applying a function to a
+    // contained [`Ok`] value, leaving an [`Err`] value untouched.
+    public readonly RResult<U, E> Map<U>(Func<T?, U> transform) =>
         this switch
         {
-            { IsOk: true } => onSuccess(value),
-            _ => this,
+            { IsOk: true } => RResult<U, E>.Ok(transform(value)),
+            _ => RResult<U, E>.Err(error),
         };
 
-    // Calls `onSuccess` function if the result is `Ok`
-    // Can transform  T => T2, but E must be same.
-    public readonly RResult<T2, E> AndThen<T2>(Func<T?, RResult<T2, E>> onSuccess) =>
+    // Calls function if the result is `Ok`
+    // Can transform  T => U, but E must be same.
+    public readonly RResult<U, E> AndThen<U>(Func<T?, RResult<U, E>> transform) =>
         this switch
         {
-            { IsOk: true } => onSuccess(value),
-            _ => RResult<T2, E>.Err(error),
+            { IsOk: true } => transform(value),
+            _ => RResult<U, E>.Err(error),
         };
 
     // Returns params `result` if the result is `Err`
