@@ -1,7 +1,5 @@
 namespace RResult.Test;
 
-using static RResult.Test.TestHelper;
-
 [TestClass]
 public class RResultTest
 {
@@ -12,6 +10,15 @@ public class RResultTest
         Assert.AreEqual(resultOk, 1);
         var resultErr = RResult<int, string>.Err("error!");
         Assert.AreEqual(resultErr, "error!");
+    }
+
+    [TestMethod]
+    public void TestRResultUnitType()
+    {
+        var resultOk = RResult<RUnit, string>.Ok(default).ToString();
+        Assert.AreEqual(resultOk, "Ok(())");
+        var resultErr = RResult<RUnit, RUnit>.Err(default).ToString();
+        Assert.AreEqual(resultErr.ToString(), "Err(())");
     }
 
     [TestMethod]

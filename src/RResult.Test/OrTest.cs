@@ -1,7 +1,5 @@
 namespace RResult.Test;
 
-using static RResult.Test.TestHelper;
-
 [TestClass]
 public partial class OrTest
 {

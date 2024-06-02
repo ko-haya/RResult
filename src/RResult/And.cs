@@ -1,6 +1,6 @@
 namespace RResult;
 
-public readonly partial record struct RResult<T, E>
+public readonly partial record struct RResult<T, E> where E : notnull
 {
     // Returns result if the result is Ok, otherwise returns the Err value of self
     public readonly RResult<T, E> And(RResult<T, E> result) =>

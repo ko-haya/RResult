@@ -1,6 +1,6 @@
 namespace RResult;
 
-public readonly partial record struct RResult<T, E>
+public readonly partial record struct RResult<T, E> where E : notnull
 {
     private readonly T? value;
     private readonly E? error;
@@ -17,7 +17,7 @@ public readonly partial record struct RResult<T, E>
     public readonly bool IsOk => value is not null && error is null;
     public readonly bool IsErr => !IsOk;
 
-    override public readonly string ToString() =>
+    public override string ToString() =>
         this switch
         {
             { IsOk: true } => $"Ok({value})",
