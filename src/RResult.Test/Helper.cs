@@ -12,4 +12,7 @@ public static class TestHelper
         true => RResult<string, string>.Ok("hoge"),
         _ => RResult<string, string>.Err("fail"),
     };
+
+    public static string Stringify(int x) => $"error code: {x}";
+    public static string PrintToConsole(string x) => x;
 }

@@ -56,17 +56,6 @@ public readonly record struct RResult<T, E>
             _ => error,
         };
 
-    // Calls `onSuccess` if the result is `Ok`
-    // Calls `onFailure` if the result is `Ok`
-    // Each callback function needs must be same type as the receiver `R`
-    public readonly R Match<R>(Func<T?, R> onSuccess, Func<E?, R> onFailure) =>
-        this switch
-        {
-            { IsOk: true } => onSuccess(value),
-            _ => onFailure(error),
-        };
-
-
     // Maps a `Result<T, E>` to `Result<U, E>` by applying a function to a
     // contained [`Ok`] value, leaving an [`Err`] value untouched.
     public readonly RResult<U, E> Map<U>(Func<T?, U> transform) =>
@@ -84,6 +73,16 @@ public readonly record struct RResult<T, E>
         {
             { IsOk: true } => RResult<T, F>.Ok(value!),
             _ => RResult<T, F>.Err(transform(error)),
+        };
+
+    // Maps this [Result<T, E>][Result] to [U] by applying either the [success] function if this
+    // result [is ok][Result.isOk], or the [failure] function if this result 
+    // public readonly R Match<R>(Func<T?, R> onSuccess, Func<E?, R> onFailure) =>
+    public readonly U MapBoth<U>(Func<T?, U> success, Func<E?, U> failure) =>
+        this switch
+        {
+            { IsOk: true } => success(value),
+            _ => failure(error),
         };
 
     // Returns result if the result is Ok, otherwise returns the Err value of self

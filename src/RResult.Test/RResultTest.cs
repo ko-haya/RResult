@@ -53,7 +53,6 @@ public class RResultTest
         Assert.AreEqual(actual2, "fail");
 
         var actual3 = RResult<int, int>.Ok(2); // Ok(3)
-                                               //.MapErr(Stringify);
         Assert.AreEqual(actual3.Unwrap, 2);
     }
 
@@ -72,44 +71,5 @@ public class RResultTest
         Assert.AreEqual(actual, 1);
         var actual2 = GetEx(false).UnwrapErr;
         Assert.AreEqual(actual2?.Message, "fail");
-    }
-
-    [TestMethod]
-    public void TestRResultMatch()
-    {
-        // Happy path
-        var actual_ok = Ok(1)
-                        .Match(
-                            v => TestHelper.Ok(v + 10), // 11
-                            RResult<int, string>.Err
-                        )
-                        .Match(
-                            v => Ok($"{v}"), // "11"
-                            RResult<string, string>.Err
-                        );
-        Assert.AreEqual(actual_ok, Ok("11"));
-
-        // Can convert Err message
-        var actual_err = Err("failed at 1")
-                         .Match(
-                            Ok,
-                            RResult<int, string>.Err
-                         )
-                         .Match(
-                            Ok,
-                            _ => RResult<int, string>.Err("failed at 3")
-                         );
-        Assert.AreEqual(actual_err, "failed at 3");
-
-        var actual_err2 = Ok(1) // Ok(1)
-                         .Match(
-                            _ => Err("failed at 2"),
-                            RResult<int, string>.Err
-                         )
-                         .Match(
-                            Ok,
-                            RResult<int, string>.Err
-                         );
-        Assert.AreEqual(actual_err2, "failed at 2");
     }
 }

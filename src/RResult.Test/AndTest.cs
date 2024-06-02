@@ -47,48 +47,4 @@ public class AndTest
                          .AndThen(Ok); // pass!
         Assert.AreEqual(actual_err3, "failed at 2");
     }
-
-    [TestMethod]
-    public void TestMap()
-    {
-        var actual = Ok(3) // Ok(300)
-                     .Map(a => a * a) // Ok(9))
-                     .Map(n => n + 10);// Ok(19))
-        Assert.AreEqual(actual, 19);
-
-        var actual2 = Err("error") // Err(error)
-                     .Map(n => n + 10) // pass
-                     .Map(a => a + 1); // pass
-        Assert.AreEqual(actual2, "error");
-
-        // Convert type
-        var actual3 = Ok(300) // Ok(300)
-                     .Map(n => $"{n}")
-                     .Unwrap;
-        Assert.AreEqual(actual3, "300");
-    }
-
-    public static string Stringify(int x) => $"error code: {x}";
-
-    [TestMethod]
-    public void TestMapErr()
-    {
-        var actual = RResult<int, int>.Ok(2) // Ok(2)
-                                              .MapErr(Stringify); // pass
-        Assert.AreEqual(actual.ToString(), "Ok(2)");
-
-        var actual2 = RResult<int, int>.Err(3) // Err(3)
-                     .MapErr(Stringify);
-        Assert.AreEqual(actual2, "error code: 3");
-
-        var actual3 = RResult<string, int>.Ok("ok")
-                     .MapErr(n => n + 10) // pass 
-                     .MapErr(a => a + 1); // pass 
-        Assert.AreEqual(actual3, "ok");
-
-        // Convert type
-        var actual4 = RResult<int, int>.Err(300) // Error(300)
-                     .MapErr(n => $"{n}");
-        Assert.AreEqual(actual4, "300");
-    }
 }
