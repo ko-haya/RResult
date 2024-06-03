@@ -77,7 +77,6 @@ public readonly record struct RResult<T, E>
 
     // Maps this [Result<T, E>][Result] to [U] by applying either the [success] function if this
     // result [is ok][Result.isOk], or the [failure] function if this result 
-    // public readonly R Match<R>(Func<T?, R> onSuccess, Func<E?, R> onFailure) =>
     public readonly U MapBoth<U>(Func<T?, U> success, Func<E?, U> failure) =>
         this switch
         {
@@ -110,12 +109,27 @@ public readonly record struct RResult<T, E>
             _ => result,
         };
 
-    //Calls `transform` if the result is [`Err`], otherwise returns the [`Ok`] value of `self`.
+    // Calls `transform` if the result is [`Err`], otherwise returns the [`Ok`] value of `self`.
     public readonly RResult<T, F> OrElse<F>(Func<E?, RResult<T, F>> transform) =>
-
         this switch
         {
             { IsOk: true } => RResult<T, F>.Ok(value!),
             _ => transform(error),
         };
+
+    // Calls a function with a reference to the contained value if [`Ok`].
+    public readonly RResult<T, E> Inspect(Action<T?> action)
+    {
+        if (IsOk)
+            action(value);
+        return this;
+    }
+
+    // Calls a function with a reference to the contained value if [`Err`].
+    public readonly RResult<T, E> InspectErr(Action<E?> action)
+    {
+        if (IsErr)
+            action(error);
+        return this;
+    }
 }

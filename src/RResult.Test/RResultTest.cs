@@ -84,4 +84,43 @@ public class RResultTest
         Assert.AreEqual(SayOk("yes").UnwrapOrElse(_ => "no"), "yes");
         Assert.AreEqual(SayErr("yes").UnwrapOrElse(v => $"expected {v}, but no"), "expected yes, but no");
     }
+
+    static RResult<int, int> LSq(int x) => RResult<int, int>.Ok(x * x);
+    static RResult<int, int> LErr(int x) => RResult<int, int>.Err(x);
+
+    [TestMethod]
+    public void TestInspectOnOk()
+    {
+        int counter = 0;
+        var actual = LSq(2).Inspect(x => counter += x + 1);
+        Assert.AreEqual(actual.ToString(), "Ok(4)");
+        Assert.AreEqual(counter, 5);
+    }
+
+    [TestMethod]
+    public void TestInspectOnErr()
+    {
+        int counter = 0;
+        var actual = LErr(2).Inspect(x => counter += x + 1);
+        Assert.AreEqual(actual.ToString(), "Err(2)");
+        Assert.AreEqual(counter, 0);
+    }
+
+    [TestMethod]
+    public void TestInspectErrOnOk()
+    {
+        int counter = 0;
+        var actual = LSq(2).InspectErr(x => counter += x + 1);
+        Assert.AreEqual(actual.ToString(), "Ok(4)");
+        Assert.AreEqual(counter, 0);
+    }
+
+    [TestMethod]
+    public void TestInspectErrOnErr()
+    {
+        int counter = 0;
+        var actual = LErr(2).InspectErr(x => counter += x + 1);
+        Assert.AreEqual(actual.ToString(), "Err(2)");
+        Assert.AreEqual(counter, 3);
+    }
 }
