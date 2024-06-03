@@ -6,10 +6,8 @@ public class RResultTest
     [TestMethod]
     public void TestRResult()
     {
-        var resultOk = RResult<int, string>.Ok(1);
-        Assert.AreEqual(resultOk, 1);
-        var resultErr = RResult<int, string>.Err("error!");
-        Assert.AreEqual(resultErr, "error!");
+        Assert.AreEqual(IntOk(1), 1);
+        Assert.AreEqual(IntErr("error"), "error");
     }
 
     [TestMethod]
@@ -46,14 +44,16 @@ public class RResultTest
     [TestMethod]
     public void TestRResultBothSameTypes()
     {
+        static RResult<string, string> GetBothTypeStr(bool success) => success switch
+        {
+            // This needs type declarationbecause it cannot use implicit constructor when same types.
+            true => RResult<string, string>.Ok("hoge"),
+            _ => RResult<string, string>.Err("fail"),
+        };
         // This needs Unwrap because it cannot use implicit constructor when same name.
-        var actual = GetBothTypeStr(true).Unwrap;
-        Assert.AreEqual(actual, "hoge");
-        var actual2 = GetBothTypeStr(false).UnwrapErr;
-        Assert.AreEqual(actual2, "fail");
-
-        var actual3 = RResult<int, int>.Ok(2); // Ok(3)
-        Assert.AreEqual(actual3.Unwrap, 2);
+        Assert.AreEqual(GetBothTypeStr(true).Unwrap, "hoge");
+        Assert.AreEqual(GetBothTypeStr(false).UnwrapErr, "fail");
+        Assert.AreEqual(RResult<int, int>.Ok(2).Unwrap, 2);
     }
 
     // Can use implicit constructor when deffenet types.
@@ -67,10 +67,8 @@ public class RResultTest
     [TestMethod]
     public void TestRResultException()
     {
-        var actual = GetEx(true).Unwrap;
-        Assert.AreEqual(actual, 1);
-        var actual2 = GetEx(false).UnwrapErr;
-        Assert.AreEqual(actual2?.Message, "fail");
+        Assert.AreEqual(GetEx(true), 1);
+        Assert.AreEqual(GetEx(false).UnwrapErr?.Message, "fail");
     }
 
     [TestMethod]

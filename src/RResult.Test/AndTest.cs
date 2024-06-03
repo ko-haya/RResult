@@ -6,24 +6,20 @@ public class AndTest
     [TestMethod]
     public void TestAnd()
     {
-        var actual = Ok(1).And(Ok(2));
-        Assert.AreEqual(actual, 2);
-
-        var actual2 = Ok(1).And(Err("failed"));
-        Assert.AreEqual(actual2, "failed");
-
-        var actual3 = Err("failed").And(Ok(1));
-        Assert.AreEqual(actual3, "failed");
+        Assert.AreEqual(IntOk(1).And(IntOk(2)), 2);
+        Assert.AreEqual(IntOk(1).And(IntErr("failed")), "failed");
+        Assert.AreEqual(IntErr("failed").And(IntOk(1)), "failed");
     }
 
     [TestMethod]
     public void TestAndThen()
     {
+        static RResult<string, string> StrOk(string v) => RResult<string, string>.Ok(v);
         // Happy path
-        var actual_ok = Ok(1) // 1
-                        .AndThen(v => Ok(v + 10)) // 11
-                        .AndThen(v => Ok($"{v}")); // "11"
-        Assert.AreEqual(actual_ok, Ok("11"));
+        var actual_ok = IntOk(1) // 1
+                        .AndThen(v => IntOk(v + 10)) // 11
+                        .AndThen(v => StrOk($"{v}")); // "11"
+        Assert.AreEqual(actual_ok.Unwrap, "11");
 
         // UnHappy path
         //  - Use Exception type error
@@ -35,16 +31,16 @@ public class AndTest
 
         // UnHappy path
         //  - Use string type error
-        var actual_err2 = Err("faild at 1")
-                         .AndThen(Ok) // pass!
+        var actual_err2 = IntErr("faild at 1")
+                         .AndThen(IntOk) // pass!
                          .AndThen(_ => RResult<string, string>.Err("failed at 2")); // pass!
         Assert.AreEqual(actual_err.UnwrapErr!.Message, "failed at 1");
 
         // UnHappy path
         //  - Thru when error occured
-        var actual_err3 = Ok(1) // Ok(1)
-                         .AndThen(_ => Err("failed at 2"))
-                         .AndThen(Ok); // pass!
+        var actual_err3 = IntOk(1) // Ok(1)
+                         .AndThen(_ => IntErr("failed at 2"))
+                         .AndThen(IntOk); // pass!
         Assert.AreEqual(actual_err3, "failed at 2");
     }
 }

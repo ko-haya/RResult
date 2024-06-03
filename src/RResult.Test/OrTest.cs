@@ -6,19 +6,9 @@ public partial class OrTest
     [TestMethod]
     public void TestOr()
     {
-        var actual = Ok(1) // 1
-                     .Or(Ok(2)) // pass
-                     .Or(Err("failed"));  // pass
-        Assert.AreEqual(actual, 1);
-
-        var actual2 = Err("failed")
-                      .Or(Ok(3))
-                      .Or(Ok(4));  // pass
-        Assert.AreEqual(actual2, 3);
-
-        var actual3 = Err("failed")
-                      .Or(Err("failed2"));
-        Assert.AreEqual(actual3, "failed2");
+        Assert.AreEqual(IntOk(1).Or(IntOk(2)).Or(IntErr("failed")), 1);
+        Assert.AreEqual(IntErr("failed").Or(IntOk(3)).Or(IntOk(4)), 3);
+        Assert.AreEqual(IntErr("failed").Or(IntErr("failed2")), "failed2");
     }
 
     [TestMethod]
