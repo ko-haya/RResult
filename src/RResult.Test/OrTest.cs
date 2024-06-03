@@ -4,7 +4,7 @@ namespace RResult.Test;
 public partial class OrTest
 {
     [TestMethod]
-    public void TestRResultOr()
+    public void TestOr()
     {
         var actual = Ok(1) // 1
                      .Or(Ok(2)) // pass
@@ -19,5 +19,16 @@ public partial class OrTest
         var actual3 = Err("failed")
                       .Or(Err("failed2"));
         Assert.AreEqual(actual3, "failed2");
+    }
+
+    [TestMethod]
+    public void TestOrElse()
+    {
+        static RResult<int, int> LSq(int x) => RResult<int, int>.Ok(x * x);
+        static RResult<int, int> LErr(int x) => RResult<int, int>.Err(x);
+        Assert.AreEqual(LSq(2).OrElse(LSq).OrElse(LSq).Unwrap, 4);
+        Assert.AreEqual(LSq(2).OrElse(LErr).OrElse(LSq).Unwrap, 4);
+        Assert.AreEqual(LErr(3).OrElse(LSq).OrElse(LErr).Unwrap, 9);
+        Assert.AreEqual(LErr(3).OrElse(LErr).OrElse(LErr).UnwrapErr, 3);
     }
 }

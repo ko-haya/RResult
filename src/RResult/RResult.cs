@@ -110,7 +110,12 @@ public readonly record struct RResult<T, E>
             _ => result,
         };
 
-    // TODO: Add  `OrElse`
+    //Calls `transform` if the result is [`Err`], otherwise returns the [`Ok`] value of `self`.
+    public readonly RResult<T, F> OrElse<F>(Func<E?, RResult<T, F>> transform) =>
 
-    // TODO: Add  `OrElseBy`
+        this switch
+        {
+            { IsOk: true } => RResult<T, F>.Ok(value!),
+            _ => transform(error),
+        };
 }
