@@ -15,9 +15,9 @@ public readonly record struct RResult<T, E>
     public static implicit operator RResult<T, E>(T v) => new(v, default);
     public static implicit operator RResult<T, E>(E e) => new(default, e);
 
-    public readonly bool IsOk =>
-        value is not null && EqualityComparer<E>.Default.Equals(error, default);
+    public readonly bool IsOk => value is not null && IsErrDefault;
     public readonly bool IsErr => !IsOk;
+    private readonly bool IsErrDefault => EqualityComparer<E>.Default.Equals(error, default);
 
     public override string ToString() =>
         this switch
