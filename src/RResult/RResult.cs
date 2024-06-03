@@ -40,20 +40,20 @@ public readonly record struct RResult<T, E>
             _ => error,
         };
 
-    // TODO: Add test
-    public readonly T? UnwrapTry =>
+    // Returns the contained[`Ok`] value or a provided option.
+    public readonly T? UnwrapOr(T option) =>
         this switch
         {
             { IsOk: true } => value,
-            _ => default,
+            _ => option,
         };
 
-    // TODO: Add test
-    public readonly E? UnwrapErrTry =>
+    // Returns the contained [`Ok`] value or computes it from a closure.
+    public readonly T? UnwrapOrElse(Func<E?, T> op) =>
         this switch
         {
-            { IsOk: true } => default,
-            _ => error,
+            { IsOk: true } => value,
+            _ => op(error),
         };
 
     // Maps a `Result<T, E>` to `Result<U, E>` by applying a function to a

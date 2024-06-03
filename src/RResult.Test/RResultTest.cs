@@ -72,4 +72,16 @@ public class RResultTest
         var actual2 = GetEx(false).UnwrapErr;
         Assert.AreEqual(actual2?.Message, "fail");
     }
+
+    [TestMethod]
+    public void TestUnwrapOr()
+    {
+        static RResult<string, string> SayOk(string x) => RResult<string, string>.Ok(x);
+        static RResult<string, string> SayErr(string x) => RResult<string, string>.Err(x);
+
+        Assert.AreEqual(SayOk("yes").UnwrapOr("no"), "yes");
+        Assert.AreEqual(SayErr("yes").UnwrapOr("no"), "no");
+        Assert.AreEqual(SayOk("yes").UnwrapOrElse(_ => "no"), "yes");
+        Assert.AreEqual(SayErr("yes").UnwrapOrElse(v => $"expected {v}, but no"), "expected yes, but no");
+    }
 }
