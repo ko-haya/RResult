@@ -1,6 +1,6 @@
 ## About
 
- RResult is Resul type for C Sharp.
+ RResult is Result type for C Sharp.
 
  RResult means:
   - Rust `Result` type like
