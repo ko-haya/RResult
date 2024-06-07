@@ -65,6 +65,13 @@ public readonly record struct RResult<T, E>
             _ => RResult<U, E>.Err(error),
         };
 
+    public readonly async Task<RResult<U, E>> MapAsync<U>(Func<T?, Task<U>> transform) =>
+        this switch
+        {
+            { IsOk: true } => RResult<U, E>.Ok(await transform(value)),
+            _ => RResult<U, E>.Err(error),
+        };
+
     // Maps a `Result<T, E>` to `Result<T, F>` by applying a function to a
     // contained [`Err`] value, leaving an [`Ok`] value untouched.
     // This function can be used to pass through a successful result while handling
@@ -75,6 +82,13 @@ public readonly record struct RResult<T, E>
             _ => RResult<T, F>.Err(transform(error)),
         };
 
+    //public readonly async Task<RResult<T, F>> MapErrAsync<F>(Func<E?, Task<F>> transform) =>
+    //    this switch
+    //    {
+    //        { IsOk: true } => RResult<T, F>.Ok(value!),
+    //        _ => RResult<T, F>.Err(await transform(error)),
+    //    };
+
     // Maps this [Result<T, E>][Result] to [U] by applying either the [success] function if this
     // result [is ok][Result.isOk], or the [failure] function if this result 
     public readonly U MapBoth<U>(Func<T?, U> success, Func<E?, U> failure) =>
@@ -83,6 +97,13 @@ public readonly record struct RResult<T, E>
             { IsOk: true } => success(value),
             _ => failure(error),
         };
+
+    //public readonly async Task<U> MapBothAsync<U>(Func<T?, Task<U>> success, Func<E?, Task<U>> failure) =>
+    //    this switch
+    //    {
+    //        { IsOk: true } => await success(value),
+    //        _ => await failure(error),
+    //    };
 
     // Returns result if the result is Ok, otherwise returns the Err value of self
     public readonly RResult<T, E> And(RResult<T, E> result) =>
@@ -101,6 +122,14 @@ public readonly record struct RResult<T, E>
             _ => RResult<U, E>.Err(error),
         };
 
+    // Todo:
+    //public readonly async Task<RResult<U, E>> AndThenAsync<U>(Func<T?, Task<RResult<U, E>>> transform) =>
+    //    this switch
+    //    {
+    //        { IsOk: true } => await transform(value),
+    //        _ => RResult<U, E>.Err(error),
+    //    };
+
     // Returns params `result` if the result is `Err`
     public readonly RResult<T, E> Or(RResult<T, E> result) =>
         this switch
@@ -116,6 +145,14 @@ public readonly record struct RResult<T, E>
             { IsOk: true } => RResult<T, F>.Ok(value!),
             _ => transform(error),
         };
+
+    // Todo
+    //public readonly async Task<RResult<T, F>> OrElseAsync<F>(Func<E?, Task<RResult<T, F>>> transform) =>
+    //    this switch
+    //    {
+    //        { IsOk: true } => RResult<T, F>.Ok(value!),
+    //        _ => await transform(error),
+    //    };
 
     // Calls a function with a reference to the contained value if [`Ok`].
     public readonly RResult<T, E> Inspect(Action<T?> action)
