@@ -25,11 +25,11 @@ jobs:
       - name: Build
         run: dotnet build --no-restore
       - name: Test
-        run: dotnet test --no-build --verbosity normal --collect:"Code Coverage"
+        run: dotnet test --no-build --verbosity normal --collect:"Code Coverage" --results-directory ./hoge
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:
-          directory: RResult.Test/TestResults
+          directory: hoge
           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Format
         run: dotnet format --verify-no-changes --verbosity diagnostic ./RResult.sln
