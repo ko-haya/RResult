@@ -3,32 +3,16 @@ using myAPI;
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-app.MapGet("/", () =>
+app.MapGet("/", Test);
+
+static IResult Test()
 {
-    var m = "Hello World!";
-    var user = User.FindUser(1);
-    return TypedResults.Ok($"{m} {user.Name}");
-});
-
-
-
-//static string SetM(string str)
-//{
-//    return $"message is: {str}";
-//}
-
-
-//R SendMailUser(int id) =>  // Input
-//	User.find(id)
-//	.AndThen(user => Validate(user))
-//	.Map(user => AppendMeta(user))
-//	.AndThen(user => UpdateDb(user))
-//	.Inspect(user => PutLog($"saved: user is {user.id}")
-//	.AndThen(user => WriteMail(user))
-//	.AndThen((user, text) => SendMail(user, text))
-//	.MapBoth(
-//		Ok => Ok_200("Success")
-//		Err => Err_400($"Failure: ${Err}")
-//	) // Output
-
+    return User.FindUser(1)
+               .AndThen(User.ValidateUser)
+               .MapBoth<IResult>
+               (
+                   Ok => TypedResults.Ok($"Hello! {Ok.Name}"),
+                   Err => TypedResults.NotFound($"Error: {Err}")
+               );
+}
 app.Run();
