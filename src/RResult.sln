@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RResult.TestConsole", "RResult.TestConsole\RResult.TestConsole.csproj", "{21CB0E29-FFA1-4BB1-B0DF-DAE836B4CC01}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RResult.Test", "RResult.Test\RResult.Test.csproj", "{C90C13D7-3712-4639-8ED6-7EB9369321E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RResult", "RResult\RResult.csproj", "{92CDF3FA-E7C8-485D-9583-0666BD540769}"

@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             //"preLaunchTask": "build",
-            "program": "${workspaceFolder}/RResult.TestConsole/bin/Debug/net8.0/RResult.TestConsole.dll",
+            "program": "${workspaceFolder}/bin/Debug/net8.0/RResult.TestConsole.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,

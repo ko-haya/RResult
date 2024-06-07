@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\RResult\RResult.csproj" />
+    <ProjectReference Include="..\..\src\RResult\RResult.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
