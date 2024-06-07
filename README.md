@@ -1,3 +1,5 @@
+[![ci](https://github.com/ko-haya/RResult/actions/workflows/main.yml/badge.svg)](https://github.com/ko-haya/RResult/actions/workflows/main.yml)
+
 ## About
 
  RResult is Result type for C Sharp.
