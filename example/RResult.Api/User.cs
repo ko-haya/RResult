@@ -1,5 +1,6 @@
-using RResult;
 namespace myAPI;
+
+using RResult;
 
 public record struct User(int Id, string Name, string? Meta)
 {
@@ -9,20 +10,20 @@ public record struct User(int Id, string Name, string? Meta)
     public static RResult<User, string> Err(string message) =>
         RResult<User, string>.Err(message);
 
-    public static RResult<User, string> FindUser(int id, bool success = true) =>
+    public static RResult<User, string> Find(int id, bool success = true) =>
         success switch
         {
-            true => Ok(new(1, "hoge", default)),
+            true => Ok(new(id, "hoge", default)),
             _ => Err($"Not found: {id}") // TODO: Enum
         };
 
-    public static RResult<User, string> ValidateUser(User user) =>
+    public static RResult<User, string> Validate(User user) =>
         user switch
         {
-            { Id: 1 } => Ok(user),
-            _ => Err($"Not valid: {user.Id}") // TODO: Enum
+            { Id: 666 } => Err("Id must be not 666"),
+            { Meta: null } => Err("Meta must be not null"),
+            _ => Ok(user),
         };
 
-
-    //public static User FindUser(int id) => new(1, "hoge");
+    public static User AppendMeta(User user) => user with { Meta = "lorem ipsum" };
 };

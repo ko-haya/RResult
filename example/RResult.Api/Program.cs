@@ -7,16 +7,16 @@ app.MapGet("/", Test);
 
 static IResult Test()
 {
-    return User.FindUser(1)
-               .AndThen(User.ValidateUser)
-               //.Map(User.AppendMeta)
+    return User.Find(1)
+               .Map(User.AppendMeta)
+               .AndThen(User.Validate)
                //.AndThen(User.UpdateDb)
                //.Inspect(user => PutLog(""))
                //.AndThen(User.WriteMail)
                //.AndThen(User.SendMail)
                .MapBoth<IResult>
                (
-                   Ok => TypedResults.Ok($"Hello! {Ok.Name}({Ok.Id})"),
+                   Ok => TypedResults.Ok($"Hello! {Ok.Name}({Ok.Id})[{Ok.Meta}]"),
                    Err => TypedResults.NotFound($"Error: {Err}")
                );
 }
