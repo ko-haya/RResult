@@ -1,0 +1,32 @@
+name: ci
+
+on:
+  pull_request:
+
+defaults:
+  run:
+    working-directory: src
+
+jobs:
+  dotnet-ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        dotnet: ["8.0.x"]
+    name: Dotnet ${{ matrix.dotnet }} sample
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --no-restore
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
+      - name: Format
+        run: dotnet format --verify-no-changes --verbosity diagnostic ./RResult.sln
+
