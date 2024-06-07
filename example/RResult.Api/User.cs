@@ -3,7 +3,6 @@ namespace MyAPI;
 using RResult;
 using Persistence;
 
-public record struct UserText(User User, string Text) { };
 public record struct User(int Id, string Name, string? Meta)
 {
     // shorthand
@@ -34,9 +33,11 @@ public record struct User(int Id, string Name, string? Meta)
 
     public static RResult<UserText, string> WriteMail(User user)
     {
-        var userText = new UserText { User = user, Text = $"Dear {user.Name}.\n\nLorem Ipsum.\n\n From XXX" };
+        var userText = new UserText { User = user, Text = $"Dear {user.Name}.\n\nLorem Ipsum.\n\n From XXX\n" };
         return RResult<UserText, string>.Ok(userText);
     }
 
     public static RResult<User, string> SendMail(UserText userText) => Ok(userText.User);
 };
+
+public record struct UserText(User User, string Text) { };

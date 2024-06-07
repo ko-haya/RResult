@@ -12,8 +12,8 @@ static IResult Test()
                .AndThen(User.Validate)
                // TODO:
                //.AndThenAsync(User.Update)
-               .Inspect(user => PutLog(user.Name))
                .AndThen(User.WriteMail)
+               .Inspect(it => PutLog(it.Text))
                .AndThen(User.SendMail) // TODO: Be async
                .MapBoth<IResult>
                (
