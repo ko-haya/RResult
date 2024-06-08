@@ -64,21 +64,14 @@ public readonly record struct RResult<T, E>
             _ => RResult<U, E>.Err(error),
         };
 
-    public readonly async Task<RResult<U, E>> MapAsync<U>(Func<T?, Task<U>> transform) =>
-        this switch
-        {
-            { IsOk: true } => RResult<U, E>.Ok(await transform(value)),
-            _ => RResult<U, E>.Err(error),
-        };
-
     // Maps a `Result<T, E>` to `Result<T, F>` by applying a function to a
     // contained [`Err`] value, leaving an [`Ok`] value untouched.
     // This function can be used to pass through a successful result while handling
     public readonly RResult<T, F> MapErr<F>(Func<E?, F> transform) =>
         this switch
         {
-            { IsOk: true } => RResult<T, F>.Ok(value!),
-            _ => RResult<T, F>.Err(transform(error)),
+            { IsErr: true } => RResult<T, F>.Err(transform(error)),
+            _ => RResult<T, F>.Ok(value!),
         };
 
     // Maps this [Result<T, E>][Result] to [U] by applying either the [success] function if this
