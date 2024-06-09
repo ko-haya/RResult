@@ -25,10 +25,7 @@ jobs:
         run: dotnet restore
       - name: Build with dotnet
         run: dotnet build --no-restore
-      - name: Pack ResultBoxes
+      - name: Release Package
         run: |
-          dotnet nuget push \
-            RResult/bin/Release/RResult.${{ github.event.release.tag_name }}.nupkg \
-            --api-key ${{secrets.NUGET_APIKEY}} \
-            --source https://api.nuget.org/v3/index.json
+          dotnet nuget push RResult/bin/Release/RResult.${{ github.event.release.tag_name }}.nupkg --api-key ${{secrets.NUGET_APIKEY}} --source https://api.nuget.org/v3/index.json
   
