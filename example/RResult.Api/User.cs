@@ -34,11 +34,7 @@ public record struct User(int Id, string Name, string? Meta)
 
     public static RResult<UserText, ErrT> WriteMail(User user) =>
         RResult<UserText, ErrT>.Ok(
-            new UserText
-            {
-                User = user,
-                Text = $"Dear {user.Name}.\n\nLorem Ipsum.\n\n From XXX\n"
-            }
+            new UserText(user, $"Dear {user.Name}.\n\nLorem Ipsum.\n\n From XXX\n")
         );
     public static RResult<User, ErrT> SendMail(UserText userText) => Ok(userText.User);
 };
