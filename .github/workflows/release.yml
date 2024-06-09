@@ -1,4 +1,4 @@
-name: Release nunuget package
+name: Release nuget package
 
 on:
   release:
@@ -24,7 +24,7 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
       - name: Build with dotnet
-        run: dotnet build --no-restore
+        run: dotnet pack --no-restore
       - name: Release Package
         run: |
           dotnet nuget push RResult/bin/Release/RResult.${{ github.event.release.tag_name }}.nupkg --api-key ${{secrets.NUGET_APIKEY}} --source https://api.nuget.org/v3/index.json
