@@ -8,7 +8,7 @@ public enum ApiErr : ushort
     Hoge = 3,
 }
 
-public record struct ErrT(ApiErr apiErr, string? desc)
+public record struct ErrT(ApiErr apiErr, string desc)
 {
     public static ErrT Unkown(string desc) => new(ApiErr.Unknown, desc);
     public static ErrT NotFound(string desc) => new(ApiErr.NotFound, desc);
