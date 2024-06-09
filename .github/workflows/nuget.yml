@@ -1,20 +1,20 @@
-name: Run CI
+name: Release nunuget package
 
 on:
-  pull_request:
+  release:
+    types: [published]
 
 defaults:
   run:
     working-directory: src
 
 jobs:
-  dotnet-ci:
+  build:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
       matrix:
         dotnet: ["8.0.x"]
-    name: Dotnet ${{ matrix.dotnet }} sample
     steps:
       - uses: actions/checkout@v4
       - name: Setup dotnet
@@ -23,10 +23,12 @@ jobs:
           dotnet-version: ${{ matrix.dotnet }}
       - name: Restore dependencies
         run: dotnet restore
-      - name: Build
+      - name: Build with dotnet
         run: dotnet build --no-restore
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
-      - name: Format
-        run: dotnet format --verify-no-changes --verbosity diagnostic ./RResult.sln
-
+      - name: Pack ResultBoxes
+        run: |
+          dotnet nuget push \
+            RResult/bin/Release/RResult.${{ github.event.release.tag_name }}.nupkg \
+            --api-key ${{secrets.NUGET_APIKEY}} \
+            --source https://api.nuget.org/v3/index.json
+  
