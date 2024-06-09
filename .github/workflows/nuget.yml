@@ -9,7 +9,7 @@ defaults:
     working-directory: src
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
