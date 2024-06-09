@@ -21,8 +21,8 @@ public record struct User(int Id, string Name, string? Meta)
     public static RResult<User, string> Validate(User user) =>
         user switch
         {
-            { Id: 666 } => Err("Id must be not 666"),
-            { Meta: null } => Err("Meta must be not null"),
+            { Id: < 1 } => Err($"Id: [{user.Id}] is out of range."),
+            { Meta: null } => Err($"Meta: must be not null"),
             _ => Ok(user),
         };
 
