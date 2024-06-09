@@ -23,6 +23,8 @@ jobs:
           dotnet-version: ${{ matrix.dotnet }}
       - name: Restore dependencies
         run: dotnet restore
+      - name: Build
+        run: dotnet build --no-restore
       - name: Build with dotnet
         run: dotnet pack --no-restore
       - name: Release Package
