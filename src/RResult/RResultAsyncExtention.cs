@@ -7,7 +7,7 @@ public static class RResultAsyncExtensions
     // Output: Task<RResult>
     // Input: RResult
     // Transform returns: Task<RResult>
-    public static async Task<RResult<U, E>> AndThenAsync<U, T, E>(
+    public static async Task<RResult<U, E>> AndThenAsync<T, U, E>(
         this RResult<T, E> input,
         Func<T?, Task<RResult<U, E>>> transform
     ) =>
@@ -20,7 +20,7 @@ public static class RResultAsyncExtensions
     // Output: Task<RResult>
     // Input: Task<RResult>
     // Transform returns: Task<RResult>
-    public static async Task<RResult<U, E>> AndThenAsync<U, T, E>(
+    public static async Task<RResult<U, E>> AndThenAsync<T, U, E>(
         this Task<RResult<T, E>> input,
         Func<T?, Task<RResult<U, E>>> transform
     ) =>
@@ -33,7 +33,7 @@ public static class RResultAsyncExtensions
     // Output: Task<RResult>
     // Input: Task<RResult>
     // Transform returns: RResult
-    public static async Task<RResult<U, E>> AndThenAsync<U, T, E>(
+    public static async Task<RResult<U, E>> AndThenAsync<T, U, E>(
         this Task<RResult<T, E>> input,
         Func<T?, RResult<U, E>> transform
     ) =>
@@ -65,7 +65,7 @@ public static class RResultAsyncExtensions
         return result;
     }
 
-    public static async Task<RResult<U, E>> MapAsync<U, T, E>(
+    public static async Task<RResult<U, E>> MapAsync<T, U, E>(
         this Task<RResult<T, E>> input,
         Func<T?, U> transform
     ) =>
@@ -76,7 +76,7 @@ public static class RResultAsyncExtensions
         };
 
     public static async Task<RResult<T, F>> MapErrAsync<T, E, F>(
-        this Task<RResult<T?, E>> input,
+        this Task<RResult<T, E>> input,
         Func<E?, F> transform
     ) =>
         await input switch
@@ -85,8 +85,8 @@ public static class RResultAsyncExtensions
             _ => RResult<T, F>.Ok((await input).Unwrap!),
         };
 
-    public static async Task<U> MapBothAsync<U, T, E>(
-        this Task<RResult<T?, E>> input,
+    public static async Task<U> MapBothAsync<T, E, U>(
+        this Task<RResult<T, E>> input,
         Func<T?, U> success,
         Func<E?, U> failure
     ) =>

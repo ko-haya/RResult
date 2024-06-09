@@ -1,5 +1,6 @@
 namespace Persistence;
 
+using MyAPI;
 using RResult;
 
 public struct Persistence
@@ -12,16 +13,16 @@ public struct Persistence
         return 1;
     }
 
-    public static async Task<RResult<V, string>> UpdateDb<V>(V record)
+    public static async Task<RResult<V, ErrT>> UpdateDb<V>(V record)
     {
         try
         {
             await CallDbUpdate(true);
-            return RResult<V, string>.Ok(record);
+            return RResult<V, ErrT>.Ok(record);
         }
         catch (Exception e)
         {
-            return RResult<V, string>.Err($"Update failed: {e.Message}");
+            return RResult<V, ErrT>.Err(ErrT.Unkown($"Update failed: {e.Message}"));
         }
     }
 }
