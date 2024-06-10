@@ -1,6 +1,6 @@
 namespace Persistence;
 
-using MyAPI; // TODO: Remove dependency
+using MyApi; // TODO: Remove dependency
 using RResult;
 
 public struct Persistence

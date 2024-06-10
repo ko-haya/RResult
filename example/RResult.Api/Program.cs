@@ -1,5 +1,4 @@
-
-using MyAPI;
+using MyApi;
 using RResult;
 
 var builder = WebApplication.CreateBuilder(args);
