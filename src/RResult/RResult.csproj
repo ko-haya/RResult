@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
 
     <PackageId>RResult</PackageId>
-    <Version>0.1.5</Version>
-    <PackageVersion>0.1.5</PackageVersion>
+    <Version>0.1.6</Version>
+    <PackageVersion>0.1.6</PackageVersion>
     <Authors>tetuyoko</Authors>
     <Company>kohaya</Company>
     <PackageDescription>`Rust` like ResultType that intends to `Railway Oriented Programming` style</PackageDescription>
