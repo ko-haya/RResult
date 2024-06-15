@@ -27,8 +27,20 @@ public record struct User(int Id, string Name, string? Meta)
             _ => Ok(user),
         };
 
-    public static async Task<RResult<User, ErrT>> Update(User user) =>
-        await Persistence.UpdateDb(user with { Meta = "Updated" });
+    // TODO: Use ResultOr, RunCatching
+    public static async Task<RResult<User, ErrT>> Update(User user)
+    {
+        var record = user with { Meta = "Updated" };
+        try
+        {
+            await DB.CallDbUpdate(record, true);
+            return RResult<User, ErrT>.Ok(record);
+        }
+        catch (Exception e)
+        {
+            return RResult<User, ErrT>.Err(ErrT.Unkown($"Update failed: {e.Message}"));
+        }
+    }
 
     public static User AppendMeta(User user) => user with { Meta = "lorem ipsum" };
 
