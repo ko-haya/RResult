@@ -1,4 +1,4 @@
-namespace MyApi;
+namespace RResult.Api;
 
 public enum ApiErr : ushort
 {

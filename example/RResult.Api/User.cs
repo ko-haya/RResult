@@ -1,4 +1,4 @@
-namespace MyApi;
+namespace RResult.Api;
 
 using RResult;
 using Persistence;
