@@ -23,9 +23,7 @@ jobs:
           dotnet-version: ${{ matrix.dotnet }}
       - name: Restore dependencies
         run: dotnet restore
-      - name: Build
-        run: dotnet build --no-restore
-      - name: Release Package
-        run: |
-          dotnet nuget push RResult/bin/Debug/RResult.${{ github.event.release.tag_name }}.nupkg --api-key ${{secrets.NUGET_APIKEY}} --source https://api.nuget.org/v3/index.json
-  
+      - name: Build and Pack
+        run: dotnet build --no-restore -c Release
+      - name: Push Package
+        run: dotnet nuget push RResult/bin/Release/RResult.${{ github.event.release.tag_name }}.nupkg --api-key ${{secrets.NUGET_APIKEY}} --source https://api.nuget.org/v3/index.json
