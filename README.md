@@ -63,7 +63,7 @@ RResult<int, SomeErr>.Ok(3) // Ok(3)
 
 Results can be chain.
 
-![image-of-rresult-concepts-and-codes](./docs/ROP_csharp.png)
+![image-of-rresult-concepts-and-codes](https://raw.githubusercontent.com/ko-haya/RResult/main/docs/ROP_csharp.png)
 
 ### Async Task Function
 
