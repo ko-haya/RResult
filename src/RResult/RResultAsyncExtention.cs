@@ -43,6 +43,45 @@ public static class RResultAsyncExtensions
             _ => RResult<U, E>.Err((await input).UnwrapErr),
         };
 
+    // Output: Task<RResult>
+    // Input: RResult
+    // Transform returns: Task<RResult>
+    public static async Task<RResult<T, F>> OrElseAsync<T, E, F>(
+        this RResult<T, E> input,
+        Func<E?, Task<RResult<T, F>>> transform
+    ) =>
+        input switch
+        {
+            { IsOk: true } => RResult<T, F>.Ok(input.Unwrap!),
+            _ => await transform(input.UnwrapErr),
+        };
+
+    // Output: Task<RResult>
+    // Input: Task<RResult>
+    // Transform returns: Task<RResult>
+    public static async Task<RResult<T, F>> OrElseAsync<T, E, F>(
+        this Task<RResult<T, E>> input,
+        Func<E?, Task<RResult<T, F>>> transform
+    ) =>
+        await input switch
+        {
+            { IsOk: true } => RResult<T, F>.Ok((await input).Unwrap!),
+            _ => await transform((await input).UnwrapErr),
+        };
+
+    // Output: Task<RResult>
+    // Input: Task<RResult>
+    // Transform returns: RResult
+    public static async Task<RResult<T, F>> OrElseAsync<T, E, F>(
+        this Task<RResult<T, E>> input,
+        Func<E?, RResult<T, F>> transform
+    ) =>
+        await input switch
+        {
+            { IsOk: true } => RResult<T, F>.Ok((await input).Unwrap!),
+            _ => await Task.FromResult(transform((await input).UnwrapErr)),
+        };
+
     public static async Task<RResult<T, E>> InspectAsync<T, E>(
         this Task<RResult<T, E>> input,
         Action<T?> action
