@@ -39,6 +39,30 @@ public class AsyncTest
     }
 
     [TestMethod]
+    public async Task TestOrElseAsync()
+    {
+        static Task<RResult<int, int>> LSq(int x) =>
+            Task.FromResult(
+                RResult<int, int>.Ok(x * x)
+            );
+
+        static Task<RResult<int, int>> LErr(int x) =>
+            Task.FromResult(
+                RResult<int, int>.Err(x - 1)
+            );
+
+        Assert.AreEqual(
+            (await LSq(2).OrElseAsync(LSq).OrElseAsync(LSq)).Unwrap,
+            4
+        );
+
+        Assert.AreEqual(
+            (await LErr(3).OrElseAsync(LErr)).UnwrapErr,
+            1
+        );
+    }
+
+    [TestMethod]
     public async Task TestAsyncAndThenRecieverIsTask()
     {
         Assert.AreEqual(await Task.FromResult(IntOk(4)).AndThenAsync(TaskMultiply), 16);
