@@ -29,4 +29,3 @@ jobs:
         run: dotnet test --no-build --verbosity normal
       - name: Format
         run: dotnet format --verify-no-changes --verbosity diagnostic ./RResult.sln
-

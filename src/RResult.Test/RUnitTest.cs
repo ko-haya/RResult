@@ -4,7 +4,7 @@ namespace RResult.Test;
 public class RUnitTest
 {
     [TestMethod]
-    public void TestRUnit()
+    public void TestRUnitEquality()
     {
         {
             RUnit unit = new();
