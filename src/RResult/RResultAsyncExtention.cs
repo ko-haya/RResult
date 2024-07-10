@@ -114,6 +114,16 @@ public static class RResultAsyncExtensions
             _ => RResult<U, E>.Err((await input).UnwrapErr),
         };
 
+    public static Task<RResult<U, E>> MapAsync<T, U, E>(
+        this RResult<T, E> input,
+        Func<T?, U> transform
+    ) =>
+        input switch
+        {
+            { IsOk: true } => Task.FromResult(RResult<U, E>.Ok(transform(input.Unwrap))),
+            _ => Task.FromResult(RResult<U, E>.Err(input.UnwrapErr)),
+        };
+
     public static async Task<RResult<T, F>> MapErrAsync<T, E, F>(
         this Task<RResult<T, E>> input,
         Func<E?, F> transform
@@ -122,6 +132,16 @@ public static class RResultAsyncExtensions
         {
             { IsErr: true } => RResult<T, F>.Err(transform((await input).UnwrapErr)),
             _ => RResult<T, F>.Ok((await input).Unwrap!),
+        };
+
+    public static Task<RResult<T, F>> MapErrAsync<T, E, F>(
+        this RResult<T, E> input,
+        Func<E?, F> transform
+    ) =>
+        input switch
+        {
+            { IsErr: true } => Task.FromResult(RResult<T, F>.Err(transform(input.UnwrapErr))),
+            _ => Task.FromResult(RResult<T, F>.Ok(input.Unwrap!)),
         };
 
     public static async Task<U> MapBothAsync<T, E, U>(
