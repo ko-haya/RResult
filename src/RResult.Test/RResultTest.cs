@@ -85,11 +85,6 @@ public class RResultTest
 
     static RResult<int, int> LSq(int x) => RResult<int, int>.Ok(x * x);
     static RResult<int, int> LErr(int x) => RResult<int, int>.Err(x);
-    static Task<RResult<int, int>> LSqTask(int x) =>
-        Task.FromResult(LSq(x));
-    static Task<RResult<int, int>> LErrTask(int x) =>
-        Task.FromResult(LErr(x));
-
 
     [TestMethod]
     public void TestInspectOnOk()
@@ -104,9 +99,14 @@ public class RResultTest
     public async Task TestAsyncInspectOnOk()
     {
         int counter = 0;
-        var actual = await LSqTask(2).InspectAsync(x => counter += x + 1);
+        var actual = await LSq(2).InspectAsync(x => counter += x + 1);
         Assert.AreEqual(actual.ToString(), "Ok(4)");
         Assert.AreEqual(counter, 5);
+
+        int counter2 = 0;
+        var actual2 = await Task.FromResult(LSq(2)).InspectAsync(x => counter2 += x + 1);
+        Assert.AreEqual(actual2.ToString(), "Ok(4)");
+        Assert.AreEqual(counter2, 5);
     }
 
     [TestMethod]
@@ -122,9 +122,14 @@ public class RResultTest
     public async Task TestAsyncInspectOnErr()
     {
         int counter = 0;
-        var actual = await LErrTask(2).InspectAsync(x => counter += x + 1);
+        var actual = await Task.FromResult(LErr(2)).InspectAsync(x => counter += x + 1);
         Assert.AreEqual(actual.ToString(), "Err(2)");
         Assert.AreEqual(counter, 0);
+
+        int counter2 = 0;
+        var actual2 = await LErr(2).InspectAsync(x => counter2 += x + 1);
+        Assert.AreEqual(actual2.ToString(), "Err(2)");
+        Assert.AreEqual(counter2, 0);
     }
 
     [TestMethod]
@@ -140,7 +145,7 @@ public class RResultTest
     public async Task TestAsyncInspectErrOnOk()
     {
         int counter = 0;
-        var actual = await LSqTask(2).InspectErrAsync(x => counter += x + 1);
+        var actual = await LSq(2).InspectErrAsync(x => counter += x + 1);
         Assert.AreEqual(actual.ToString(), "Ok(4)");
         Assert.AreEqual(counter, 0);
     }
@@ -158,7 +163,7 @@ public class RResultTest
     public async Task TestAsyncInspectErrOnErr()
     {
         int counter = 0;
-        var actual = await LErrTask(2).InspectErrAsync(x => counter += x + 1);
+        var actual = await LErr(2).InspectErrAsync(x => counter += x + 1);
         Assert.AreEqual(actual.ToString(), "Err(2)");
         Assert.AreEqual(counter, 3);
     }

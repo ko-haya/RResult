@@ -93,6 +93,16 @@ public static class RResultAsyncExtensions
         return result;
     }
 
+    public static Task<RResult<T, E>> InspectAsync<T, E>(
+        this RResult<T, E> input,
+        Action<T?> action
+    )
+    {
+        if (input.IsOk)
+            action(input.Unwrap);
+        return Task.FromResult(input);
+    }
+
     public static async Task<RResult<T, E>> InspectErrAsync<T, E>(
         this Task<RResult<T, E>> input,
         Action<E?> action
@@ -102,6 +112,17 @@ public static class RResultAsyncExtensions
         if (result.IsErr)
             action(result.UnwrapErr);
         return result;
+    }
+
+    public static Task<RResult<T, E>> InspectErrAsync<T, E>(
+        this RResult<T, E> input,
+        Action<E?> action
+    )
+
+    {
+        if (input.IsErr)
+            action(input.UnwrapErr);
+        return Task.FromResult(input);
     }
 
     public static async Task<RResult<U, E>> MapAsync<T, U, E>(
