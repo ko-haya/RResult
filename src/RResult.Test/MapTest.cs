@@ -26,20 +26,24 @@ public class MapTest
     [TestMethod]
     public async Task TestMapAsync()
     {
-        var actual = await Task.FromResult(IntOk(3)) // Ok(300)
+        var actual = await IntOk(3) // Ok(300)
                            .MapAsync(a => a * a) // Ok(9))
                            .MapAsync(n => n + 10);// Ok(19))
         Assert.AreEqual(actual, 19);
 
-        var actual2 = await Task.FromResult(IntErr("error")) // Err(error)
+        var actual2 = await IntErr("error") // Err(error)
                             .MapAsync(n => n + 10) // pass
                             .MapAsync(a => a + 1); // pass
         Assert.AreEqual(actual2, "error");
 
         // Convert type
-        var actual3 = await Task.FromResult(IntOk(300)) // Ok(300)
+        var actual3 = await IntOk(300) // Ok(300)
                             .MapAsync(n => $"{n}");
         Assert.AreEqual(actual3.Unwrap, "300");
+
+        var actual4 = Task.FromResult(IntOk(300)) // Ok(300)
+                      .MapAsync(n => $"{n}");
+        Assert.AreEqual((await actual4).Unwrap, "300");
     }
 
     [TestMethod]
@@ -70,15 +74,15 @@ public class MapTest
     {
         static string Stringify(int x) => $"error code: {x}";
 
-        var actual = await Task.FromResult(RResult<int, int>.Ok(2)) // Ok(2)
+        var actual = await RResult<int, int>.Ok(2) // Ok(2)
                            .MapErrAsync(Stringify); // pass
         Assert.AreEqual(actual.ToString(), "Ok(2)");
 
-        var actual2 = await Task.FromResult(RResult<int, int>.Err(3)) // Err(3)
+        var actual2 = await RResult<int, int>.Err(3) // Err(3)
                             .MapErrAsync(Stringify);
         Assert.AreEqual(actual2, "error code: 3");
 
-        var actual3 = await Task.FromResult(RResult<string, int>.Ok("ok"))
+        var actual3 = await RResult<string, int>.Ok("ok")
                             .MapErrAsync(n => n + 10) // pass
                             .MapErrAsync(a => a + 1); // pass
         Assert.AreEqual(actual3, "ok");
@@ -87,6 +91,10 @@ public class MapTest
         var actual4 = await Task.FromResult(RResult<int, int>.Err(300)) // Error(300)
                             .MapErrAsync(n => $"{n}");
         Assert.AreEqual(actual4, "300");
+
+        var actual5 = await Task.FromResult(RResult<int, int>.Err(300)) // Error(300)
+                            .MapErrAsync(n => $"{n}");
+        Assert.AreEqual(actual5, "300");
     }
 
     [TestMethod]
