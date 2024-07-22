@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace RResult;
 
 public static class RResultAsyncExtensions

@@ -133,3 +133,10 @@ public readonly record struct RResult<T, E>
         return this;
     }
 }
+
+// Factory
+public readonly struct RResult
+{
+    public static RResult<T, RUnit> Ok<T>(T v) => RResult<T, RUnit>.Ok(v);
+    public static RResult<RUnit, E> Err<E>(E e) => RResult<RUnit, E>.Err(e);
+}
