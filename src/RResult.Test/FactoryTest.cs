@@ -1,5 +1,5 @@
 namespace RResult.Test;
-
+using RF = RResultFactory;
 
 [TestClass]
 public class FactoryTest
@@ -7,8 +7,7 @@ public class FactoryTest
     [TestMethod]
     public void TestToRResultOr()
     {
-
-        Assert.AreEqual(RResult.Ok(2), 2);
-        Assert.AreEqual(RResult.Err("error"), "error");
+        Assert.AreEqual(RF.Ok(2), 2);
+        Assert.AreEqual(RF.Err("error"), "error");
     }
 }

@@ -134,8 +134,8 @@ public readonly record struct RResult<T, E>
     }
 }
 
-// Factory
-public readonly struct RResult
+// Experimental
+public readonly struct RResultFactory
 {
     public static RResult<T, RUnit> Ok<T>(T v) => RResult<T, RUnit>.Ok(v);
     public static RResult<RUnit, E> Err<E>(E e) => RResult<RUnit, E>.Err(e);
