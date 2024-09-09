@@ -3,7 +3,7 @@ name: Run CI
 on:
   pull_request:
   schedule:
-    - cron: '00 10 * * *'
+    - cron: "00 10 * * *"
 
 defaults:
   run:
@@ -15,7 +15,7 @@ jobs:
     timeout-minutes: 5
     strategy:
       matrix:
-        dotnet: ["8.0.x"]
+        dotnet: ["8.0.x", "9.0.x"]
     name: Dotnet ${{ matrix.dotnet }} sample
     steps:
       - uses: actions/checkout@v4
