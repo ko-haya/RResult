@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 using RResult.Api;
 using RResult;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
@@ -18,7 +18,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 
 app.MapGet("/favicon.ico", () => TypedResults.NotFound());
 
@@ -38,10 +37,67 @@ app.MapGet("/weather", Results<Ok<WeatherForecast>, NotFound> () =>
     });
 
 // Todos
-app.MapGet("/todoitems", async (TodoDb db) =>
-    await db.Todos.ToListAsync());
+app.MapGet("/todoitems", GetAllTodos);
+app.MapGet("/todoitems/complete", GetCompleteTodos);
+app.MapGet("/todoitems/{id}", GetTodo);
+app.MapPost("/todoitems", CreateTodo);
+app.MapPut("/todoitems/{id}", UpdateTodo);
+app.MapDelete("/todoitems/{id}", DeleteTodo);
 
 app.Run();
+
+
+static async Task<IResult> GetAllTodos(TodoDb db)
+{
+    return TypedResults.Ok(await db.Todos.ToArrayAsync());
+}
+
+static async Task<IResult> GetCompleteTodos(TodoDb db)
+{
+    return TypedResults.Ok(await db.Todos.Where(t => t.IsComplete).ToListAsync());
+}
+
+static async Task<IResult> GetTodo(int id, TodoDb db)
+{
+    return await db.Todos.FindAsync(id)
+        is Todo todo
+            ? TypedResults.Ok(todo)
+            : TypedResults.NotFound();
+}
+
+static async Task<IResult> UpdateTodo(int id, Todo inputTodo, TodoDb db)
+{
+    var todo = await db.Todos.FindAsync(id);
+
+    if (todo is null) return TypedResults.NotFound();
+
+    todo.Name = inputTodo.Name;
+    todo.IsComplete = inputTodo.IsComplete;
+
+    await db.SaveChangesAsync();
+
+    return TypedResults.NoContent();
+};
+
+static async Task<IResult> CreateTodo(Todo todo, TodoDb db)
+{
+    db.Todos.Add(todo);
+    await db.SaveChangesAsync();
+
+    return TypedResults.Created($"/todoitems/{todo.Id}", todo);
+}
+
+static async Task<IResult> DeleteTodo(int id, TodoDb db)
+{
+    if (await db.Todos.FindAsync(id) is Todo todo)
+    {
+        db.Todos.Remove(todo);
+        await db.SaveChangesAsync();
+        return TypedResults.NoContent();
+    }
+
+    return TypedResults.NotFound();
+};
 
 
 static async Task<Results<Ok<User>, NotFound<string>, UnprocessableEntity<string>, BadRequest<string>>> Get(int id = 1) =>
