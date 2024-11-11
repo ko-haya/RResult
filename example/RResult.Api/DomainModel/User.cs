@@ -1,7 +1,6 @@
 namespace RResult.Api;
 
 using RResult;
-using Persistence;
 
 public record struct User(int Id, string Name, string? Meta)
 {
