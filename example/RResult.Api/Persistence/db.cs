@@ -19,4 +19,6 @@ public class TodoDb : DbContext
         : base(options) { }
 
     public DbSet<Todo> Todos => Set<Todo>();
+    public DbSet<Tag> Tags => Set<Tag>();
 }
+

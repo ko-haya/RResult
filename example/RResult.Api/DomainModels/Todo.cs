@@ -1,6 +1,2 @@
-public class Todo
-{
-    public int Id { get; set; }
-    public string? Name { get; set; }
-    public bool IsComplete { get; set; }
-}
+public record Todo(int Id, string? Name, bool IsComplete) { }
+public record Tag(int Id, string? Name, bool IsComplete) { }
