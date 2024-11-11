@@ -1,8 +1,9 @@
-namespace RResult.Api;
+namespace RResult.Api.Controllers;
 
 using Microsoft.AspNetCore.Http.HttpResults;
+using RResult.Api.DomainModels;
 
-public readonly record struct SampleHandler
+public readonly record struct SampleController
 {
     public static async Task<Results<Ok<User>, NotFound<string>, UnprocessableEntity<string>, BadRequest<string>>> SampleGet(int id = 1) =>
         await User.Find(id)

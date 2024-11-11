@@ -1,4 +1,4 @@
-namespace RResult.Api;
+namespace RResult.Api.DomainModels;
 
 using RResult;
 
