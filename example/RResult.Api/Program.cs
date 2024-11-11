@@ -1,3 +1,4 @@
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -20,21 +21,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapGet("/favicon.ico", () => TypedResults.NotFound());
-
 app.MapGet("/", () => SampleGet(1));
 app.MapGet("/{id}", SampleGet);
-
-string[] Summaries =
-["Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"];
-
-app.MapGet("/weather", Results<Ok<WeatherForecast>, NotFound> () =>
-    {
-        return TypedResults.Ok(new WeatherForecast(
-            DateTime.Now.AddDays(2),
-            Random.Shared.Next(-20, 55),
-            Summaries[Random.Shared.Next(Summaries.Length)]
-        ));
-    });
 
 // Todos
 app.MapGet("/todos", TodoHandler.GetAllTodos);
@@ -43,6 +31,8 @@ app.MapGet("/todos/{id}", TodoHandler.GetTodo);
 app.MapPost("/todos", TodoHandler.CreateTodo);
 app.MapPut("/todos/{id}", TodoHandler.UpdateTodo);
 app.MapDelete("/todos/{id}", TodoHandler.DeleteTodo);
+
+app.MapGet("/weather", WeatherHandler.CalcWeather);
 
 app.Run();
 
@@ -62,8 +52,3 @@ static async Task<Results<Ok<User>, NotFound<string>, UnprocessableEntity<string
             when err.apiErr is ApiErr.Unknown => TypedResults.UnprocessableEntity(err.desc),
         { IsOk: false, UnwrapErr: var err } => TypedResults.BadRequest(err.desc),
     };
-
-record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
