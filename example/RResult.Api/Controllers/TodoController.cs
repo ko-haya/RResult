@@ -1,7 +1,8 @@
-namespace RResult.Api;
+namespace RResult.Api.Controllers;
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using RResult.Api.DomainModels;
 
 public readonly record struct TodoController
 {

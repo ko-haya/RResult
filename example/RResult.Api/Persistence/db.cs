@@ -1,6 +1,7 @@
 namespace RResult.Api;
 
 using Microsoft.EntityFrameworkCore;
+using RResult.Api.DomainModels;
 
 public struct DB
 {
@@ -21,4 +22,3 @@ public class TodoDb : DbContext
     public DbSet<Todo> Todos => Set<Todo>();
     public DbSet<Tag> Tags => Set<Tag>();
 }
-

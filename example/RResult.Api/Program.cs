@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using RResult.Api;
+using RResult.Api.Controllers;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TodoDb>(opt =>
@@ -13,14 +14,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 WebApplication app = builder.Build();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-// Routes
+/// Routes
 app.MapGet("/favicon.ico", () => TypedResults.NotFound());
 app.MapGet("/", () => SampleController.SampleGet(1));
 app.MapGet("/{id}", SampleController.SampleGet);
