@@ -2,7 +2,7 @@ namespace RResult.Api;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 
-public readonly record struct WeatherHandler
+public readonly record struct WeatherController
 {
     public static readonly string[] Summaries =
          ["Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"];

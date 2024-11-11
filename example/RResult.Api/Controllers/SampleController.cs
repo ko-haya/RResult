@@ -2,7 +2,7 @@ namespace RResult.Api;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 
-public readonly record struct SampleHandler
+public readonly record struct SampleController
 {
     public static async Task<Results<Ok<User>, NotFound<string>, UnprocessableEntity<string>, BadRequest<string>>> SampleGet(int id = 1) =>
         await User.Find(id)

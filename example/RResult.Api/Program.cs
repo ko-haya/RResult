@@ -20,17 +20,17 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapGet("/favicon.ico", () => TypedResults.NotFound());
-app.MapGet("/", () => SampleHandler.SampleGet(1));
-app.MapGet("/{id}", SampleHandler.SampleGet);
+app.MapGet("/", () => SampleController.SampleGet(1));
+app.MapGet("/{id}", SampleController.SampleGet);
 
 // Todos
-app.MapGet("/todos", TodoHandler.GetAllTodos);
-app.MapGet("/todos/complete", TodoHandler.GetCompleteTodos);
-app.MapGet("/todos/{id}", TodoHandler.GetTodo);
-app.MapPost("/todos", TodoHandler.CreateTodo);
-app.MapPut("/todos/{id}", TodoHandler.UpdateTodo);
-app.MapDelete("/todos/{id}", TodoHandler.DeleteTodo);
+app.MapGet("/todos", TodoController.GetAllTodos);
+app.MapGet("/todos/complete", TodoController.GetCompleteTodos);
+app.MapGet("/todos/{id}", TodoController.GetTodo);
+app.MapPost("/todos", TodoController.CreateTodo);
+app.MapPut("/todos/{id}", TodoController.UpdateTodo);
+app.MapDelete("/todos/{id}", TodoController.DeleteTodo);
 
-app.MapGet("/weather", WeatherHandler.CalcWeather);
+app.MapGet("/weather", WeatherController.CalcWeather);
 
 app.Run();

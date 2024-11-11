@@ -3,7 +3,7 @@ namespace RResult.Api;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-public readonly record struct TodoHandler
+public readonly record struct TodoController
 {
     public static async Task<Ok<List<Todo>>> GetAllTodos(TodoDb db) =>
         TypedResults.Ok(await db.Todos.ToListAsync());
