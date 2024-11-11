@@ -37,65 +37,14 @@ app.MapGet("/weather", Results<Ok<WeatherForecast>, NotFound> () =>
     });
 
 // Todos
-app.MapGet("/todoitems", GetAllTodos);
-app.MapGet("/todoitems/complete", GetCompleteTodos);
-app.MapGet("/todoitems/{id}", GetTodo);
-app.MapPost("/todoitems", CreateTodo);
-app.MapPut("/todoitems/{id}", UpdateTodo);
-app.MapDelete("/todoitems/{id}", DeleteTodo);
+app.MapGet("/todos", TodoHandler.GetAllTodos);
+app.MapGet("/todos/complete", TodoHandler.GetCompleteTodos);
+app.MapGet("/todos/{id}", TodoHandler.GetTodo);
+app.MapPost("/todos", TodoHandler.CreateTodo);
+app.MapPut("/todos/{id}", TodoHandler.UpdateTodo);
+app.MapDelete("/todos/{id}", TodoHandler.DeleteTodo);
 
 app.Run();
-
-static async Task<Ok<List<Todo>>> GetAllTodos(TodoDb db) =>
-    TypedResults.Ok(await db.Todos.ToListAsync());
-
-static async Task<Ok<List<Todo>>> GetCompleteTodos(TodoDb db) =>
-    TypedResults.Ok(await db.Todos.Where(t => t.IsComplete).ToListAsync());
-
-// TODO: To be switched
-static async Task<Results<Ok<Todo>, NotFound>> GetTodo(int id, TodoDb db) =>
-    await db.Todos.FindAsync(id)
-        is Todo todo
-            ? TypedResults.Ok(todo)
-            : TypedResults.NotFound();
-
-// TODO: To be pipelined
-static async Task<Created<Todo>> CreateTodo(Todo todo, TodoDb db)
-{
-    db.Todos.Add(todo);
-    await db.SaveChangesAsync();
-    return TypedResults.Created($"/todoitems/{todo.Id}", todo);
-}
-
-// TODO: To be pipelined
-static async Task<Results<NoContent, NotFound>> UpdateTodo(int id, Todo inputTodo, TodoDb db)
-{
-    var todo = await db.Todos.FindAsync(id);
-
-    if (todo is null) return TypedResults.NotFound();
-
-    todo.Name = inputTodo.Name;
-    todo.IsComplete = inputTodo.IsComplete;
-
-    await db.SaveChangesAsync();
-
-    return TypedResults.NoContent();
-};
-
-
-// TODO: To be pipelined
-static async Task<Results<NoContent, NotFound>> DeleteTodo(int id, TodoDb db)
-{
-    if (await db.Todos.FindAsync(id) is Todo todo)
-    {
-        db.Todos.Remove(todo);
-        await db.SaveChangesAsync();
-        return TypedResults.NoContent();
-    }
-
-    return TypedResults.NotFound();
-};
-
 
 static async Task<Results<Ok<User>, NotFound<string>, UnprocessableEntity<string>, BadRequest<string>>> SampleGet(int id = 1) =>
     await User.Find(id)
