@@ -21,8 +21,8 @@ if (app.Environment.IsDevelopment())
 
 app.MapGet("/favicon.ico", () => TypedResults.NotFound());
 
-app.MapGet("/", () => Get(1));
-app.MapGet("/{id}", Get);
+app.MapGet("/", () => SampleGet(1));
+app.MapGet("/{id}", SampleGet);
 
 string[] Summaries =
 ["Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"];
@@ -46,26 +46,29 @@ app.MapDelete("/todoitems/{id}", DeleteTodo);
 
 app.Run();
 
+static async Task<Ok<List<Todo>>> GetAllTodos(TodoDb db) =>
+    TypedResults.Ok(await db.Todos.ToListAsync());
 
-static async Task<IResult> GetAllTodos(TodoDb db)
-{
-    return TypedResults.Ok(await db.Todos.ToArrayAsync());
-}
+static async Task<Ok<List<Todo>>> GetCompleteTodos(TodoDb db) =>
+    TypedResults.Ok(await db.Todos.Where(t => t.IsComplete).ToListAsync());
 
-static async Task<IResult> GetCompleteTodos(TodoDb db)
-{
-    return TypedResults.Ok(await db.Todos.Where(t => t.IsComplete).ToListAsync());
-}
-
-static async Task<IResult> GetTodo(int id, TodoDb db)
-{
-    return await db.Todos.FindAsync(id)
+// TODO: To be switched
+static async Task<Results<Ok<Todo>, NotFound>> GetTodo(int id, TodoDb db) =>
+    await db.Todos.FindAsync(id)
         is Todo todo
             ? TypedResults.Ok(todo)
             : TypedResults.NotFound();
+
+// TODO: To be pipelined
+static async Task<Created<Todo>> CreateTodo(Todo todo, TodoDb db)
+{
+    db.Todos.Add(todo);
+    await db.SaveChangesAsync();
+    return TypedResults.Created($"/todoitems/{todo.Id}", todo);
 }
 
-static async Task<IResult> UpdateTodo(int id, Todo inputTodo, TodoDb db)
+// TODO: To be pipelined
+static async Task<Results<NoContent, NotFound>> UpdateTodo(int id, Todo inputTodo, TodoDb db)
 {
     var todo = await db.Todos.FindAsync(id);
 
@@ -79,15 +82,9 @@ static async Task<IResult> UpdateTodo(int id, Todo inputTodo, TodoDb db)
     return TypedResults.NoContent();
 };
 
-static async Task<IResult> CreateTodo(Todo todo, TodoDb db)
-{
-    db.Todos.Add(todo);
-    await db.SaveChangesAsync();
 
-    return TypedResults.Created($"/todoitems/{todo.Id}", todo);
-}
-
-static async Task<IResult> DeleteTodo(int id, TodoDb db)
+// TODO: To be pipelined
+static async Task<Results<NoContent, NotFound>> DeleteTodo(int id, TodoDb db)
 {
     if (await db.Todos.FindAsync(id) is Todo todo)
     {
@@ -100,7 +97,7 @@ static async Task<IResult> DeleteTodo(int id, TodoDb db)
 };
 
 
-static async Task<Results<Ok<User>, NotFound<string>, UnprocessableEntity<string>, BadRequest<string>>> Get(int id = 1) =>
+static async Task<Results<Ok<User>, NotFound<string>, UnprocessableEntity<string>, BadRequest<string>>> SampleGet(int id = 1) =>
     await User.Find(id)
           .Map(User.AppendMeta)
           .AndThen(User.Validate)
