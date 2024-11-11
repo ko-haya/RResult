@@ -1,7 +1,7 @@
+namespace RResult.Api;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.HttpResults;
-
-namespace RResult.Api;
 
 public readonly record struct TodoHandler
 {
