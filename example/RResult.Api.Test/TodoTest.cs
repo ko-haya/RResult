@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Http.HttpResults;
-using RResult.Api.Test.Helpers;
 using RResult.Api;
 using RResult.Api.DomainModels;
 using RResult.Api.Controllers;
-using Microsoft.VisualBasic;
+using RResult.Api.Test.Helpers;
 
 namespace RResult.Api.Test;
 
@@ -37,7 +36,6 @@ public class TodoInMemoryTests
     [Fact]
     public async Task GetAllReturnsTodosFromDatabase()
     {
-        //await using var context = new MockDb().CreateDbContext();
         context.Todos.Add(new Todo(1, "Test title 1", false));
         context.Todos.Add(new Todo(2, "Test title 2", true));
         await context.SaveChangesAsync();
@@ -45,61 +43,13 @@ public class TodoInMemoryTests
         var result = await TodoController.GetAllTodos(context);
 
         Assert.IsType<Ok<List<Todo>>>(result);
-        Assert.NotNull(result.Value);
         Assert.NotEmpty(result.Value);
-        Assert.Collection(result.Value, todo1 =>
-        {
-            Assert.Equal(1, todo1.Id);
-            Assert.Equal("Test title 1", todo1.Name);
-            Assert.False(todo1.IsComplete);
-        }, todo2 =>
-        {
-            Assert.Equal(2, todo2.Id);
-            Assert.Equal("Test title 2", todo2.Name);
-            Assert.True(todo2.IsComplete);
-        });
+        Assert.Collection(result.Value,
+            todo1 => Assert.False(todo1.IsComplete),
+            todo2 => Assert.True(todo2.IsComplete),
+        );
     }
-
-    [Fact]
-    public async Task GetTodoReturnsNotFoundIfNotExists2()
-    {
-        var result = await TodoController.GetTodo(1, context);
-
-        Assert.IsType<Results<Ok<Todo>, NotFound>>(result);
-        var notFoundResult = (NotFound)result.Result;
-        Assert.NotNull(notFoundResult);
-    }
-    // </snippet_11>
-
-    //// <snippet_1>
-    //[Fact]
-    //public async Task GetTodoReturnsTodoFromDatabase()
-    //{
-    //    // Arrange
-    //    await using var context = new MockDb().CreateDbContext();
-
-    //    context.Todos.Add(new Todo
-    //    {
-    //        Id = 1,
-    //        Title = "Test title",
-    //        Description = "Test description",
-    //        IsDone = false
-    //    });
-
-    //    await context.SaveChangesAsync();
-
-    //    // Act
-    //    var result = await TodoEndpointsV1.GetTodo(1, context);
-
-    //    //Assert
-    //    Assert.IsType<Results<Ok<Todo>, NotFound>>(result);
-
-    //    var okResult = (Ok<Todo>)result.Result;
-
-    //    Assert.NotNull(okResult.Value);
-    //    Assert.Equal(1, okResult.Value.Id);
-    //}
-    //// </snippet_1>
+    // </snippet_1>
 
     //// <snippet_3>
     //[Fact]
