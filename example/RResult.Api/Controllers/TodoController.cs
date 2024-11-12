@@ -21,7 +21,7 @@ public readonly record struct TodoController
     // TODO: To be pipelined
     public static async Task<Created<Todo>> CreateTodo(TodoDto todo, TodoDb db)
     {
-        var newTodo = new Todo(null, todo.Name, todo.IsComplete);
+        var newTodo = new Todo(0, todo.Name, todo.IsComplete);
         await db.Todos.AddAsync(newTodo);
         await db.SaveChangesAsync(); // Unprocessable entity
         return TypedResults.Created($"/todoitems/{newTodo.Id}", newTodo);
@@ -30,15 +30,18 @@ public readonly record struct TodoController
     // TODO: To be pipelined
     public static async Task<Results<NoContent, NotFound>> UpdateTodo(int id, TodoDto inputTodo, TodoDb db)
     {
-        Todo? todo = await db.Todos.FirstOrDefaultAsync(t => t.Id == id);
+        var todo = await db.Todos.FirstOrDefaultAsync(t => t.Id == id);
         if (todo is null) return TypedResults.NotFound();
+
         Todo newTodo = todo with
         {
             Name = inputTodo.Name,
             IsComplete = inputTodo.IsComplete
         };
+
         db.Todos.Update(newTodo);
         await db.SaveChangesAsync(); // Unprocessable entity
+
         return TypedResults.NoContent();
     }
 

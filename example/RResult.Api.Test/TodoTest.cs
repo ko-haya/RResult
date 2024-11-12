@@ -28,9 +28,8 @@ public class TodoInMemoryTests
 
         var result = await TodoController.GetTodo(1, context);
 
-        Assert.IsType<Ok<Todo>>(result.Result);
-        var okResult = (Ok<Todo>)result.Result;
-        Assert.NotNull(okResult.Value);
+        Assert.IsType<Ok<TodoDto>>(result.Result);
+        var okResult = (Ok<TodoDto>)result.Result;
         Assert.False(okResult.Value.IsComplete);
     }
 
@@ -59,16 +58,12 @@ public class TodoInMemoryTests
     [Fact]
     public async Task CreateTodo()
     {
-        var newTodo = new TodoDto("Test title", false);
-        var result = await TodoController.CreateTodo(newTodo, context);
+        var result = await TodoController.CreateTodo(
+            new TodoDto("Test title", false),
+            context
+        );
 
-        //Assert
         Assert.IsType<Created<Todo>>(result);
-
-        Assert.NotNull(result);
-        Assert.NotNull(result.Location);
-
-        Assert.NotEmpty(context.Todos);
         Assert.Collection(context.Todos, todo =>
         {
             Assert.Equal("Test title", todo.Name);
@@ -76,45 +71,28 @@ public class TodoInMemoryTests
         });
     }
 
-    //[Fact]
-    //public async Task UpdateTodoUpdatesTodoInDatabase()
-    //{
-    //    //Arrange
-    //    await using var context = new MockDb().CreateDbContext();
+    [Fact]
+    public async Task UpdateTodo()
+    {
+        int targetId = 1;
+        context.Todos.Add(new Todo(targetId, "Exiting test title", false));
+        await context.SaveChangesAsync();
+        context.ChangeTracker.Clear();
 
-    //    context.Todos.Add(new Todo
-    //    {
-    //        Id = 1,
-    //        Title = "Exiting test title",
-    //        IsDone = false
-    //    });
+        var updatedTodo = new TodoDto("Updated test title", true);
+        var result = await TodoController.UpdateTodo(
+            targetId,
+            updatedTodo,
+            context
+        );
 
-    //    await context.SaveChangesAsync();
+        Assert.IsType<NoContent>(result.Result);
 
-    //    var updatedTodo = new Todo
-    //    {
-    //        Id = 1,
-    //        Title = "Updated test title",
-    //        IsDone = true
-    //    };
-
-    //    //Act
-    //    var result = await TodoEndpointsV1.UpdateTodo(updatedTodo, context);
-
-    //    //Assert
-    //    Assert.IsType<Results<Created<Todo>, NotFound>>(result);
-
-    //    var createdResult = (Created<Todo>)result.Result;
-
-    //    Assert.NotNull(createdResult);
-    //    Assert.NotNull(createdResult.Location);
-
-    //    var todoInDb = await context.Todos.FindAsync(1);
-
-    //    Assert.NotNull(todoInDb);
-    //    Assert.Equal("Updated test title", todoInDb!.Title);
-    //    Assert.True(todoInDb.IsDone);
-    //}
+        var todoInDb = await context.Todos.FindAsync(targetId);
+        Assert.NotNull(todoInDb);
+        Assert.Equal("Updated test title", todoInDb!.Name);
+        Assert.True(todoInDb.IsComplete);
+    }
 
     //[Fact]
     //public async Task DeleteTodoDeletesTodoInDatabase()
