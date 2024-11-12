@@ -12,22 +12,23 @@ public readonly record struct TodoController
     public static async Task<Ok<List<Todo>>> GetCompleteTodos(TodoDb db) =>
         TypedResults.Ok(await db.Todos.Where(t => t.IsComplete).ToListAsync());
 
-    public static async Task<Results<Ok<Todo>, NotFound>> GetTodo(int id, TodoDb db) =>
+    public static async Task<Results<Ok<TodoDto>, NotFound>> GetTodo(int id, TodoDb db) =>
         await db.Todos.FirstOrDefaultAsync(t => t.Id == id)
             is Todo todo
-                ? TypedResults.Ok(todo)
+                ? TypedResults.Ok(new TodoDto(todo.Name, todo.IsComplete))
                 : TypedResults.NotFound();
 
     // TODO: To be pipelined
-    public static async Task<Created<Todo>> CreateTodo(Todo todo, TodoDb db)
+    public static async Task<Created<Todo>> CreateTodo(TodoDto todo, TodoDb db)
     {
-        db.Todos.Add(todo);
+        var newTodo = new Todo(null, todo.Name, todo.IsComplete);
+        await db.Todos.AddAsync(newTodo);
         await db.SaveChangesAsync(); // Unprocessable entity
-        return TypedResults.Created($"/todoitems/{todo.Id}", todo);
+        return TypedResults.Created($"/todoitems/{newTodo.Id}", newTodo);
     }
 
     // TODO: To be pipelined
-    public static async Task<Results<NoContent, NotFound>> UpdateTodo(int id, Todo inputTodo, TodoDb db)
+    public static async Task<Results<NoContent, NotFound>> UpdateTodo(int id, TodoDto inputTodo, TodoDb db)
     {
         Todo? todo = await db.Todos.FirstOrDefaultAsync(t => t.Id == id);
         if (todo is null) return TypedResults.NotFound();

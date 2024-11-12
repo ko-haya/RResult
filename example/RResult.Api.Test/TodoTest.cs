@@ -30,11 +30,12 @@ public class TodoInMemoryTests
 
         Assert.IsType<Ok<Todo>>(result.Result);
         var okResult = (Ok<Todo>)result.Result;
-        Assert.Equal(false, okResult.Value?.IsComplete);
+        Assert.NotNull(okResult.Value);
+        Assert.False(okResult.Value.IsComplete);
     }
 
     [Fact]
-    public async Task GetAllReturnsTodosFromDatabase()
+    public async Task GetAllReturnsTodos()
     {
         context.Todos.Add(new Todo(1, "Test title 1", false));
         context.Todos.Add(new Todo(2, "Test title 2", true));
@@ -43,46 +44,37 @@ public class TodoInMemoryTests
         var result = await TodoController.GetAllTodos(context);
 
         Assert.IsType<Ok<List<Todo>>>(result);
-        Assert.NotEmpty(result.Value);
+        Assert.NotNull(result.Value);
         Assert.Collection(result.Value,
-            todo1 => Assert.False(todo1.IsComplete),
-            todo2 => Assert.True(todo2.IsComplete),
-        );
+            todo1 =>
+                {
+                    Assert.False(todo1.IsComplete);
+                },
+            todo2 =>
+                {
+                    Assert.True(todo2.IsComplete);
+                });
     }
-    // </snippet_1>
 
-    //// <snippet_3>
-    //[Fact]
-    //public async Task CreateTodoCreatesTodoInDatabase()
-    //{
-    //    //Arrange
-    //    await using var context = new MockDb().CreateDbContext();
+    [Fact]
+    public async Task CreateTodo()
+    {
+        var newTodo = new TodoDto("Test title", false);
+        var result = await TodoController.CreateTodo(newTodo, context);
 
-    //    var newTodo = new TodoDto
-    //    {
-    //        Title = "Test title",
-    //        Description = "Test description",
-    //        IsDone = false
-    //    };
+        //Assert
+        Assert.IsType<Created<Todo>>(result);
 
-    //    //Act
-    //    var result = await TodoEndpointsV1.CreateTodo(newTodo, context);
+        Assert.NotNull(result);
+        Assert.NotNull(result.Location);
 
-    //    //Assert
-    //    Assert.IsType<Created<Todo>>(result);
-
-    //    Assert.NotNull(result);
-    //    Assert.NotNull(result.Location);
-
-    //    Assert.NotEmpty(context.Todos);
-    //    Assert.Collection(context.Todos, todo =>
-    //    {
-    //        Assert.Equal("Test title", todo.Title);
-    //        Assert.Equal("Test description", todo.Description);
-    //        Assert.False(todo.IsDone);
-    //    });
-    //}
-    //// </snippet_3>
+        Assert.NotEmpty(context.Todos);
+        Assert.Collection(context.Todos, todo =>
+        {
+            Assert.Equal("Test title", todo.Name);
+            Assert.False(todo.IsComplete);
+        });
+    }
 
     //[Fact]
     //public async Task UpdateTodoUpdatesTodoInDatabase()
