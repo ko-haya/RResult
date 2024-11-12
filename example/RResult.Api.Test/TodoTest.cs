@@ -94,32 +94,17 @@ public class TodoInMemoryTests
         Assert.True(todoInDb.IsComplete);
     }
 
-    //[Fact]
-    //public async Task DeleteTodoDeletesTodoInDatabase()
-    //{
-    //    //Arrange
-    //    await using var context = new MockDb().CreateDbContext();
+    [Fact]
+    public async Task DeleteTodoDeletesTodoInDatabase()
+    {
+        var existingTodo = new Todo(1, "Exiting test title", false);
+        context.Todos.Add(existingTodo);
+        await context.SaveChangesAsync();
+        context.ChangeTracker.Clear();
 
-    //    var existingTodo = new Todo
-    //    {
-    //        Id = 1,
-    //        Title = "Exiting test title",
-    //        IsDone = false
-    //    };
+        var result = await TodoController.DeleteTodo(existingTodo.Id, context);
 
-    //    context.Todos.Add(existingTodo);
-
-    //    await context.SaveChangesAsync();
-
-    //    //Act
-    //    var result = await TodoEndpointsV1.DeleteTodo(existingTodo.Id, context);
-
-    //    //Assert
-    //    Assert.IsType<Results<NoContent, NotFound>>(result);
-
-    //    var noContentResult = (NoContent)result.Result;
-
-    //    Assert.NotNull(noContentResult);
-    //    Assert.Empty(context.Todos);
-    //}
+        Assert.IsType<NoContent>(result.Result);
+        Assert.Empty(context.Todos);
+    }
 }
