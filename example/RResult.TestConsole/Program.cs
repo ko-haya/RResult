@@ -1,5 +1,7 @@
 ﻿namespace RResult.TestConsole;
 
+using System.ComponentModel;
+using System.Text.RegularExpressions;
 using RResult;
 
 class Program
@@ -19,17 +21,18 @@ class Program
         {
             if (row == 0 || row >= 25)
                 ResetConsole();
-            //var hoge = ErrT.Unknown("hoge");
-            //Console.WriteLine($"Input: {hoge}");
-            var john = new Customer.Eligible("John");
-            var total = God.CalculateTotal(john, 100m);
-            Console.WriteLine($"He is : {john.Id}, {john.GetType().Name}");
-            Console.WriteLine($"total suspects 90m: {total}");
 
-            var john2 = new Customer.Registered("Ally", 100);
-            var total2 = God.CalculateTotal(john2, 100m);
-            Console.WriteLine($"He is : {john2.Id}, {john2.age}, {john2.GetType().Name}");
-            Console.WriteLine($"total suspects 90m: {total2}");
+            List<Customer> list = [
+                new Customer.Eligible("John"),
+                new Customer.Registered("Ally", 100),
+                new Customer.Guest("Betty"),
+            ];
+            foreach (var item in list)
+            {
+                Console.WriteLine(
+                    God.PrintProfile(item)
+                );
+            }
 
 
             //string? input = Console.ReadLine();
