@@ -1,4 +1,9 @@
-﻿using RResult;
+﻿namespace RResult.TestConsole;
+
+using System.ComponentModel;
+using System.Text.RegularExpressions;
+using RResult;
+
 class Program
 {
     public static RResult<int, Exception> GetEx_Res(bool success) =>
@@ -16,17 +21,31 @@ class Program
         {
             if (row == 0 || row >= 25)
                 ResetConsole();
+
+            List<Customer> list = [
+                new Customer.Eligible("John"),
+                new Customer.Registered("Ally", 100),
+                new Customer.Guest("Betty"),
+            ];
+            foreach (var item in list)
+            {
+                Console.WriteLine(
+                    God.PrintProfile(item)
+                );
+            }
+
+
             //string? input = Console.ReadLine();
 
             //if (string.IsNullOrEmpty(input)) break;
-            var resultOk = RResult<string, string>.Ok("hoge");
-            var resultErr = RResult<string, Exception>.Err(new Exception("error!"));
-            RResult<RUnit, string> resultUnit = default;
+            //var resultOk = RResult<string, string>.Ok("hoge");
+            //var resultErr = RResult<string, Exception>.Err(new Exception("error!"));
+            //RResult<RUnit, string> resultUnit = default;
 
-            //var actual3 = RResult<int, int>.Ok(2); // Ok(2)
-            Console.WriteLine($"value is: {resultUnit}");
-            Console.WriteLine($"value is: {resultOk.Unwrap}");
-            Console.WriteLine($"value is: {resultErr.UnwrapErr?.Message}");
+            ////var actual3 = RResult<int, int>.Ok(2); // Ok(2)
+            //Console.WriteLine($"value is: {resultUnit}");
+            //Console.WriteLine($"value is: {resultOk.Unwrap}");
+            //Console.WriteLine($"value is: {resultErr.UnwrapErr?.Message}");
             //Console.WriteLine($"Input: {input}");
             //Console.WriteLine("Begins with uppercase? " +
             //     $"{(StringLibrary.StartsWithUpper(input) ? "Yes" : "No")}");
