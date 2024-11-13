@@ -5,6 +5,8 @@ on:
     paths:
       - "example/RResult.Api/**"
       - "example/RResult.Api.Test/**"
+  schedule:
+    - cron: "00 11 * * *"
 
 defaults:
   run:

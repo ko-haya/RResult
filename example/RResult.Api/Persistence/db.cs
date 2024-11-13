@@ -3,7 +3,7 @@ namespace RResult.Api;
 using Microsoft.EntityFrameworkCore;
 using RResult.Api.DomainModels;
 
-public struct DB
+public record struct DB
 {
     public static async Task<int> CallDbUpdate<V>(V record, bool success = true)
     {
@@ -14,11 +14,8 @@ public struct DB
     }
 }
 
-public class TodoDb : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public TodoDb(DbContextOptions<TodoDb> options)
-        : base(options) { }
-
     public DbSet<Todo> Todos => Set<Todo>();
     public DbSet<Tag> Tags => Set<Tag>();
 }
