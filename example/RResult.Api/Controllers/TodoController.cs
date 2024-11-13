@@ -38,7 +38,6 @@ public readonly record struct TodoController
             Name = inputTodo.Name,
             IsComplete = inputTodo.IsComplete
         };
-        inputTodo.IsComplete = false;
 
         db.Todos.Update(newTodo);
         await db.SaveChangesAsync(); // Unprocessable entity

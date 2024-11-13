@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using RResult.Api;
-using RResult.Api.DomainModels;
 using RResult.Api.Controllers;
+using RResult.Api.DomainModels;
 using RResult.Api.Test.Helpers;
 
 namespace RResult.Api.Test;
