@@ -20,7 +20,7 @@ public record struct User(int Id, string Name, string? Meta)
     public static RResult<User, ErrT> Validate(User user) =>
         user switch
         {
-            { Id: < 1 } => ErrT.Unkown($"Id: [{user.Id}] is out of range."),
+            { Id: < 1 } => ErrT.Unknown($"Id: [{user.Id}] is out of range."),
             { Id: 6 } => ErrT.Hoge("hoge"),
             { Meta: null } => ErrT.None($"Meta: must be not null"),
             _ => Ok(user),
@@ -37,7 +37,7 @@ public record struct User(int Id, string Name, string? Meta)
         }
         catch (Exception e)
         {
-            return RResult<User, ErrT>.Err(ErrT.Unkown($"Update failed: {e.Message}"));
+            return RResult<User, ErrT>.Err(ErrT.Unknown($"Update failed: {e.Message}"));
         }
     }
 

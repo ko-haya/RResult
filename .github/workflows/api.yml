@@ -1,15 +1,14 @@
-name: Run CI
+name: Run CI for API
 
 on:
   pull_request:
     paths:
-      - "src/**"
-  schedule:
-    - cron: "00 10 * * *"
+      - "example/RResult.Api/**"
+      - "example/RResult.Api.Test/**"
 
 defaults:
   run:
-    working-directory: src
+    working-directory: example/RResult.Api
 
 jobs:
   dotnet-ci:
@@ -32,4 +31,4 @@ jobs:
       - name: Test
         run: dotnet test --no-build --verbosity normal
       - name: Format
-        run: dotnet format --verify-no-changes --verbosity diagnostic ./RResult.sln
+        run: dotnet format --verify-no-changes --verbosity diagnostic ./RResult.Api.sln
