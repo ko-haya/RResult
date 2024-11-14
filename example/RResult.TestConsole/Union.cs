@@ -9,7 +9,7 @@ public abstract record Customer
     public sealed record Guest(string Id) : Customer;
 };
 
-public readonly struct God
+public readonly record struct God
 {
     public static decimal CalculateTotal(Customer customer, decimal spend)
     {

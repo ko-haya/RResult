@@ -4,7 +4,7 @@ using RResult.Api;
 using RResult.Api.Controllers;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<TodoDb>(opt =>
+builder.Services.AddDbContext<AppDbContext>(opt =>
 {
     opt.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
     opt.UseInMemoryDatabase("TodoList");

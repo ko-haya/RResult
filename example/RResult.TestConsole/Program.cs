@@ -1,7 +1,5 @@
 ﻿namespace RResult.TestConsole;
 
-using System.ComponentModel;
-using System.Text.RegularExpressions;
 using RResult;
 
 class Program

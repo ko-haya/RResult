@@ -2,15 +2,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RResult.Api.Test.Helpers;
 
-public class MockDb : IDbContextFactory<TodoDb>
+public class MockDb : IDbContextFactory<AppDbContext>
 {
-    public TodoDb CreateDbContext()
+    public AppDbContext CreateDbContext()
     {
-        var options = new DbContextOptionsBuilder<TodoDb>()
+        var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             .UseInMemoryDatabase($"InMemoryTestDb-{DateTime.Now.ToFileTimeUtc()}")
             .Options;
 
-        return new TodoDb(options);
+        return new AppDbContext(options);
     }
 }

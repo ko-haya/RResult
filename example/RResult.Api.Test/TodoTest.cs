@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Http.HttpResults;
-using RResult.Api;
 using RResult.Api.Controllers;
 using RResult.Api.DomainModels;
 using RResult.Api.Test.Helpers;
@@ -8,12 +7,12 @@ namespace RResult.Api.Test;
 
 public class TodoInMemoryTests
 {
-    private readonly TodoDb context = new MockDb().CreateDbContext();
+    private readonly AppDbContext db = new MockDb().CreateDbContext();
 
     [Fact]
     public async Task GetTodoReturnsNotFoundIfNotExists()
     {
-        var result = await TodoController.GetTodo(1, context);
+        var result = await TodoController.GetTodo(1, db);
 
         Assert.IsType<NotFound>(result.Result);
         var notFoundResult = (NotFound)result.Result;
@@ -23,10 +22,10 @@ public class TodoInMemoryTests
     [Fact]
     public async Task GetTodoReturnsOk()
     {
-        context.Todos.Add(new Todo(1, "Test title 2", false));
-        await context.SaveChangesAsync();
+        db.Todos.Add(new Todo(1, "Test title 2", false));
+        await db.SaveChangesAsync();
 
-        var result = await TodoController.GetTodo(1, context);
+        var result = await TodoController.GetTodo(1, db);
 
         Assert.IsType<Ok<TodoDto>>(result.Result);
         var okResult = (Ok<TodoDto>)result.Result;
@@ -36,13 +35,13 @@ public class TodoInMemoryTests
     [Fact]
     public async Task GetAllReturnsTodos()
     {
-        context.Todos.Add(new Todo(1, "Test title 1", false));
-        context.Todos.Add(new Todo(2, "Test title 2", true));
-        await context.SaveChangesAsync();
+        db.Todos.Add(new Todo(1, "Test title 1", false));
+        db.Todos.Add(new Todo(2, "Test title 2", true));
+        await db.SaveChangesAsync();
 
-        var result = await TodoController.GetAllTodos(context);
+        var result = await TodoController.GetAllTodos(db);
 
-        Assert.IsType<Ok<List<Todo>>>(result);
+        Assert.IsType<Ok<List<TodoDto>>>(result);
         Assert.NotNull(result.Value);
         Assert.Collection(result.Value,
             todo1 =>
@@ -60,11 +59,11 @@ public class TodoInMemoryTests
     {
         var result = await TodoController.CreateTodo(
             new TodoDto("Test title", false),
-            context
+            db
         );
 
-        Assert.IsType<Created<Todo>>(result);
-        Assert.Collection(context.Todos, todo =>
+        Assert.IsType<Created<TodoDto>>(result);
+        Assert.Collection(db.Todos, todo =>
         {
             Assert.Equal("Test title", todo.Name);
             Assert.False(todo.IsComplete);
@@ -75,20 +74,20 @@ public class TodoInMemoryTests
     public async Task UpdateTodo()
     {
         int targetId = 1;
-        context.Todos.Add(new Todo(targetId, "Exiting test title", false));
-        await context.SaveChangesAsync();
-        context.ChangeTracker.Clear();
+        db.Todos.Add(new Todo(targetId, "Exiting test title", false));
+        await db.SaveChangesAsync();
+        db.ChangeTracker.Clear();
 
         var updatedTodo = new TodoDto("Updated test title", true);
         var result = await TodoController.UpdateTodo(
             targetId,
             updatedTodo,
-            context
+            db
         );
 
         Assert.IsType<NoContent>(result.Result);
 
-        var todoInDb = await context.Todos.FindAsync(targetId);
+        var todoInDb = await db.Todos.FindAsync(targetId);
         Assert.NotNull(todoInDb);
         Assert.Equal("Updated test title", todoInDb!.Name);
         Assert.True(todoInDb.IsComplete);
@@ -98,13 +97,13 @@ public class TodoInMemoryTests
     public async Task DeleteTodoDeletesTodoInDatabase()
     {
         var existingTodo = new Todo(1, "Exiting test title", false);
-        context.Todos.Add(existingTodo);
-        await context.SaveChangesAsync();
-        context.ChangeTracker.Clear();
+        db.Todos.Add(existingTodo);
+        await db.SaveChangesAsync();
+        db.ChangeTracker.Clear();
 
-        var result = await TodoController.DeleteTodo(existingTodo.Id, context);
+        var result = await TodoController.DeleteTodo(existingTodo.Id, db);
 
         Assert.IsType<NoContent>(result.Result);
-        Assert.Empty(context.Todos);
+        Assert.Empty(db.Todos);
     }
 }
