@@ -62,7 +62,7 @@ public class TodoInMemoryTests
             db
         );
 
-        Assert.IsType<Created<TodoDto>>(result);
+        Assert.IsType<Created<Todo>>(result.Result);
         Assert.Collection(db.Todos, todo =>
         {
             Assert.Equal("Test title", todo.Name);

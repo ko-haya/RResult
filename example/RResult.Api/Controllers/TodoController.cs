@@ -6,54 +6,42 @@ using RResult.Api.DomainModels;
 
 public readonly record struct TodoController
 {
-    public static async Task<Ok<List<TodoDto>>> GetAllTodos(AppDbContext db)
-    {
-        var todoDtos = await db.Todos.Select(todo =>
-            new TodoDto(todo.Name, todo.IsComplete)
-        ).ToListAsync();
-        return TypedResults.Ok(todoDtos);
-    }
+    public static async Task<Ok<List<TodoDto>>> GetAllTodos(AppDbContext db) =>
+        await db.Todos
+            .Select(todo => new TodoDto(todo.Name, todo.IsComplete)
+        ).ToListAsync() switch
+        { List<TodoDto> todoDtos => TypedResults.Ok(todoDtos) };
 
-    public static async Task<Ok<List<TodoDto>>> GetCompleteTodos(AppDbContext db)
-    {
-        var todoDtos = await db.Todos.Where(t => t.IsComplete).Select(todo =>
-            new TodoDto(todo.Name, todo.IsComplete)
-        ).ToListAsync();
-        return TypedResults.Ok(todoDtos);
-    }
+    public static async Task<Ok<List<TodoDto>>> GetCompleteTodos(AppDbContext db) =>
+        await db.Todos.Where(t => t.IsComplete)
+            .Select(todo => new TodoDto(todo.Name, todo.IsComplete)
+        ).ToListAsync() switch
+        { List<TodoDto> todoDtos => TypedResults.Ok(todoDtos) };
 
     public static async Task<Results<Ok<TodoDto>, NotFound>> GetTodo(int id, AppDbContext db) =>
-        await db.Todos.FirstOrDefaultAsync(t => t.Id == id)
-            is Todo todo
-                ? TypedResults.Ok(new TodoDto(todo.Name, todo.IsComplete))
-                : TypedResults.NotFound();
-
-    // TODO: To be pipelined
-    public static async Task<Created<TodoDto>> CreateTodo(TodoDto todo, AppDbContext db)
-    {
-        var newTodo = new Todo(0, todo.Name, todo.IsComplete);
-        await db.Todos.AddAsync(newTodo);
-        await db.SaveChangesAsync(); // Unprocessable entity
-        return TypedResults.Created($"/todoitems/{newTodo.Id}", todo);
-    }
-
-    // TODO: To be pipelined
-    public static async Task<Results<NoContent, NotFound>> UpdateTodo(int id, TodoDto inputTodo, AppDbContext db)
-    {
-        var todo = await db.Todos.FirstOrDefaultAsync(t => t.Id == id);
-        if (todo is null) return TypedResults.NotFound();
-
-        Todo newTodo = todo with
+        await db.Todos.FirstOrDefaultAsync(t => t.Id == id) switch
         {
-            Name = inputTodo.Name,
-            IsComplete = inputTodo.IsComplete
+            Todo todo => TypedResults.Ok(new TodoDto(todo.Name, todo.IsComplete)),
+            _ => TypedResults.NotFound()
         };
 
-        db.Todos.Update(newTodo);
-        await db.SaveChangesAsync(); // Unprocessable entity
+    public static async Task<Results<Created<Todo>, UnprocessableEntity>> CreateTodo(TodoDto todo, AppDbContext db) =>
+        // Fix: Unusable method chainings by null possiblity.
+        await DB.Upsert(new Todo(default, todo.Name, todo.IsComplete), db) switch
+        {
+            { IsOk: true, Unwrap: var newTodo }
+                when newTodo is not null => TypedResults.Created($"/todoitems/{newTodo.Id}", newTodo),
+            _ => TypedResults.UnprocessableEntity()
+        };
 
-        return TypedResults.NoContent();
-    }
+    public static async Task<Results<NoContent, NotFound, UnprocessableEntity>> UpdateTodo(int id, TodoDto inputTodo, AppDbContext db) =>
+        await DB.Upsert(new Todo(id, inputTodo.Name, inputTodo.IsComplete), db) switch
+        {
+            { IsOk: true } => TypedResults.NoContent(),
+            { IsOk: false, UnwrapErr: var err }
+                when err.apiErr is ApiErr.NotFound => TypedResults.NotFound(),
+            _ => TypedResults.UnprocessableEntity()
+        };
 
     // TODO: To be pipelined
     public static async Task<Results<NoContent, NotFound>> DeleteTodo(int id, AppDbContext db)
