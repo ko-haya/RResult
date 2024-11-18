@@ -25,49 +25,9 @@ public readonly record struct TodoController
             _ => TypedResults.NotFound()
         };
 
-    public static async Task<RResult<Todo, string>> Create(Todo todo, AppDbContext db)
-    {
-        // FIX: MemoryDb cannot use this
-        //using var transaction = db.Database.BeginTransaction();
-        var newTodo = new Todo(default, todo.Name, todo.IsComplete);
-        try
-        {
-            await db.Todos.AddAsync(newTodo);
-            await db.SaveChangesAsync();
-            //transaction.Commit();
-            return RResult<Todo, string>.Ok(newTodo);
-        }
-        catch (Exception e)
-        {
-            return RResult<Todo, string>.Err($"Update failed: {e.Message}");
-        }
-    }
-
-    public static async Task<RResult<Todo, string>> Update(int id, TodoDto todo, AppDbContext db)
-    {
-        var oldTodo = await db.Todos.FirstOrDefaultAsync(t => t.Id == id);
-        if (oldTodo == null) {
-            return RResult<Todo,string>.Err("Todo not found");
-        }
-        var newTodo = new Todo(id, todo.Name, todo.IsComplete);
-        // FIX: MemoryDb cannot use this
-        //using var transaction = db.Database.BeginTransaction();
-        try
-        {
-            db.Todos.Update(newTodo);
-            await db.SaveChangesAsync(); // Unprocessable entity?
-            //transaction.Commit();
-            return RResult<Todo, string>.Ok(newTodo);
-        }
-        catch (Exception e)
-        {
-            return RResult<Todo, string>.Err($"Update failed: {e.Message}");
-        }
-    }
-
     public static async Task<Results<Created<Todo>, UnprocessableEntity>> CreateTodo(TodoDto todo, AppDbContext db) =>
         // Fix: Unusable method chainings by null possiblity.
-        await Create(new Todo(default, todo.Name, todo.IsComplete), db) switch
+        await DB.Upsert(new Todo(default, todo.Name, todo.IsComplete), db) switch
         {
             { IsOk: true, Unwrap: var newTodo }
                 when newTodo is not null => TypedResults.Created($"/todoitems/{newTodo.Id}", newTodo),
@@ -75,12 +35,11 @@ public readonly record struct TodoController
         };
 
     public static async Task<Results<NoContent, NotFound, UnprocessableEntity>> UpdateTodo(int id, TodoDto inputTodo, AppDbContext db) =>
-        await Update(id, inputTodo , db) switch
+        await DB.Upsert(new Todo(id, inputTodo.Name, inputTodo.IsComplete), db) switch
         {
             { IsOk: true } => TypedResults.NoContent(),
             { IsOk: false, UnwrapErr: var err}
-                // TODO: Use enum
-                when err == "Todo not found" => TypedResults.NotFound(),
+                when err.apiErr is ApiErr.NotFound => TypedResults.NotFound(),
             _ => TypedResults.UnprocessableEntity()
         };
 
