@@ -38,7 +38,7 @@ public readonly record struct TodoController
         await DB.Upsert(new Todo(id, inputTodo.Name, inputTodo.IsComplete), db) switch
         {
             { IsOk: true } => TypedResults.NoContent(),
-            { IsOk: false, UnwrapErr: var err}
+            { IsOk: false, UnwrapErr: var err }
                 when err.apiErr is ApiErr.NotFound => TypedResults.NotFound(),
             _ => TypedResults.UnprocessableEntity()
         };

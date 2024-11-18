@@ -39,7 +39,8 @@ public record struct DB
     private static async Task<RResult<Todo, ErrT>> Update(Todo newTodo, AppDbContext db)
     {
         var oldTodo = await db.Todos.FirstOrDefaultAsync(t => t.Id == newTodo.Id);
-        if (oldTodo == null) {
+        if (oldTodo == null)
+        {
             return Todo.Err(ErrT.NotFound($"Record not found"));
         }
         // FIX: MemoryDb cannot use this
